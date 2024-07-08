@@ -19,7 +19,7 @@ gem "importmap-rails", "~> 1.2"
 gem 'jbuilder', '~> 2.11'
 gem 'mail', '~> 2.7'
 gem 'mailerlite'
-gem 'rails_admin', '~> 2.2.1'
+gem 'rails_admin', '~> 2.3.0'
 gem 'redis', '~> 4.7'
 gem "stimulus-rails", "~> 1.2"
 gem 'turbo-rails', '~> 1.1'
