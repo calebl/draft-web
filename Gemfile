@@ -1,10 +1,10 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '3.2.2'
+ruby '3.3.1'
 
-# Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 6.1.7'
+# Update Rails to 7.2
+gem 'rails', '~> 7.2.0'
 # Use Puma as the app server
 gem 'puma', '~> 6.4'
 # Use SCSS for stylesheets
@@ -13,16 +13,15 @@ gem 'sass-rails', '>= 6'
 
 gem 'acts_as_list'
 gem 'blazer'
+gem "bigdecimal", "~> 3.1"
 gem 'cancancan', '~> 3.2'
 gem 'devise', '~> 4.7'
-gem "importmap-rails", "~> 1.2"
 gem 'jbuilder', '~> 2.11'
 gem 'mail', '~> 2.7'
 gem 'mailerlite'
-gem 'rails_admin', '~> 2.2.1'
+gem 'rails_admin', '~> 3.0'
 gem 'redis', '~> 4.7'
-gem "stimulus-rails", "~> 1.2"
-gem 'turbo-rails', '~> 1.1'
+gem 'sqlite3', '~> 2.0', '>= 2.0.4'
 
 gem 'delayed_job', '~>4.1'
 gem 'delayed_job_active_record', '~>4.1'
@@ -37,8 +36,6 @@ gem 'net-pop', require: false
 gem 'net-smtp', require: false
 
 group :development, :test do
-  # Use sqlite3 as the database for Active Record
-  gem 'sqlite3', '~> 1.4'
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
   gem 'htmlbeautifier'
@@ -67,7 +64,7 @@ group :test do
 end
 
 group :production do
-  gem 'pg', '1.4.5'
+  gem 'pg', '~> 1.5'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
