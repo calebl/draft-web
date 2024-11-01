@@ -308,7 +308,7 @@ GEM
       railties (>= 5.2)
     reverse_markdown (2.1.1)
       nokogiri
-    rexml (3.2.6)
+    rexml (3.3.9)
     rubocop (1.56.2)
       base64 (~> 0.1.1)
       json (~> 2.3)
