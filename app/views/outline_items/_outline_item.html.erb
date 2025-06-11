@@ -1,9 +1,9 @@
 <% if item.present? %>
-  <div id="<%= dom_id item %>" class="outline-item" data-id="<%= item.id %>" data-controller="outline-item">
+<div id="<%= dom_id item %>" class="outline-item" data-id="<%= item.id %>" data-controller="outline-item">
     <%= form_with(model: [story, :outline, item], class: 'outline-item-form', data: {target: 'form'}) do |form| %>
-      <%= form.check_box :completed, data: {action: 'outline-item#submit'} %>
-      <%= form.text_area :text, data: { 'outline-item-target': 'text',action: 'change->outline-item#submit'} %>
-      <%= form.submit "save", class: 'hidden' %>
+    <%= form.check_box :completed, data: {action: 'outline-item#submit'} %>
+    <%= form.text_area :text, data: { 'outline-item-target': 'text',action: 'change->outline-item#submit'} %>
+    <%= form.submit "save", class: 'hidden' %>
     <% end %>
-  </div>
+</div>
 <% end %>
