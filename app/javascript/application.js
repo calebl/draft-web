@@ -7,6 +7,5 @@ import "@hotwired/turbo-rails"
 import "jquery"
 import "sortablejs"
 import "controllers"
-import "./rails_admin"
 
 // global.toastr = require("toastr")
