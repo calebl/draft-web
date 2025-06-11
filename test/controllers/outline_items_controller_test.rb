@@ -19,7 +19,7 @@ class OutlineItemsControllerTest < ActionDispatch::IntegrationTest
   test 'should not get new if unauthorized' do
     sign_out @user
     get new_story_outline_outline_item_path(@story)
-    assert_redirected_to root_path
+    assert_redirected_to '/user/sign_in'
   end
 
   test 'should show outline item' do
@@ -30,7 +30,7 @@ class OutlineItemsControllerTest < ActionDispatch::IntegrationTest
   test 'should not show outline item if unauthorized' do
     sign_out @user
     get story_outline_outline_item_path(@story, @outline_item)
-    assert_redirected_to root_path
+    assert_redirected_to '/user/sign_in'
   end
 
   test 'should create outline item' do
@@ -58,7 +58,7 @@ class OutlineItemsControllerTest < ActionDispatch::IntegrationTest
         outline_item: { text: 'New outline item' }
       }
     end
-    assert_redirected_to root_path
+    assert_redirected_to '/user/sign_in'
   end
 
   test 'should update outline item' do
@@ -72,7 +72,7 @@ class OutlineItemsControllerTest < ActionDispatch::IntegrationTest
 
   test 'should update outline item position' do
     patch story_outline_outline_item_path(@story, @outline_item), params: {
-      outline_item: { position: 2 }
+      outline_item: { position: 2, text: @outline_item.text }
     }
     assert_redirected_to story_outline_path(@story)
     @outline_item.reload
@@ -93,7 +93,7 @@ class OutlineItemsControllerTest < ActionDispatch::IntegrationTest
     patch story_outline_outline_item_path(@story, @outline_item), params: {
       outline_item: { text: 'Updated text' }
     }
-    assert_redirected_to root_path
+    assert_redirected_to '/user/sign_in'
     @outline_item.reload
     assert_not_equal 'Updated text', @outline_item.text
   end
@@ -110,7 +110,7 @@ class OutlineItemsControllerTest < ActionDispatch::IntegrationTest
     assert_no_difference('OutlineItem.count') do
       delete story_outline_outline_item_path(@story, @outline_item)
     end
-    assert_redirected_to root_path
+    assert_redirected_to '/user/sign_in'
   end
 
   test 'should create outline if story has none' do

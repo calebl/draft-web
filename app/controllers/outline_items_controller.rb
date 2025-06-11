@@ -1,37 +1,33 @@
+# frozen_string_literal: true
+
 class OutlineItemsController < ApplicationController
   before_action :story
-  before_action :outline_item, only: [:show, :update, :destroy]
+  before_action :outline_item, only: %i[show update destroy]
 
   def new
-    unless can? :create, @story
-      redirect_to_home
-    end
+    redirect_to_home unless can? :create, @story
+
     @outline_item = @outline.outline_items.new
   end
 
   def show
-    unless can? :read, @story
-      redirect_to_home
-    end
+    redirect_to_home unless can? :read, @story
   end
 
   def create
-    unless can? :create, @story
-      redirect_to_home
-    end
+    redirect_to_home unless can? :create, @story
 
     item_params[:text].each_line do |text|
-      @outline.outline_items.create(text: text) if text.present?
+      @outline.outline_items.create(text:) if text.present?
     end
 
     redirect_to story_outline_path(@story), status: :see_other
   end
 
   def update
-    unless can? :update, @story
-      redirect_to_home
-    end
-    if item_params[:text].empty?
+    redirect_to_home unless can? :update, @story
+
+    if item_params[:text].to_s.empty?
       @outline_item.destroy
     else
       @outline_item.set_list_position(item_params[:position]) if item_params[:position]
@@ -42,26 +38,21 @@ class OutlineItemsController < ApplicationController
   end
 
   def destroy
-    unless can? :destroy, @story
-      redirect_to_home
-    end
+    redirect_to_home unless can? :destroy, @story
+
     @outline_item.destroy
     head :ok
   end
 
   private
 
-  def item_params 
+  def item_params
     params.require(:outline_item).permit(:text, :completed, :position)
   end
 
   def story
     @story = Story.find(params[:story_id])
-    if @story.outline
-      @outline = @story.outline
-    else
-      @outline = Outline.create(story_id: @story.id)
-    end
+    @outline = @story.outline || Outline.create(story_id: @story.id)
   end
 
   def outline_item
