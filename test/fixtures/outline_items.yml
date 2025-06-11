@@ -17,6 +17,6 @@ two:
 # column: value
 
 three:
-  outline: two
-  text: "chapter 1"
-  position: 1
+  outline: one
+  text: "chapter 3"
+  position: 3

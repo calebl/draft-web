@@ -7,5 +7,4 @@
 one: 
   story: one
 
-two: 
-  story: two
+# Note: story two intentionally has no outline to test outline creation
