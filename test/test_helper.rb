@@ -1,3 +1,8 @@
+require 'simplecov'
+SimpleCov.start 'rails' do
+  enable_coverage :branch
+end
+
 # frozen_string_literal: true
 
 ENV['RAILS_ENV'] ||= 'test'
