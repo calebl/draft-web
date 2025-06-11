@@ -3,8 +3,8 @@ class ApplicationController < ActionController::Base
 
   protected
 
-  rescue_from CanCan::AccessDenied do |exception|
-    puts "CanCan::AccessDenied Exception thrown : message=#{exception.message}"
+  rescue_from CanCan::AccessDenied do |_exception|
+    redirect_to root_path, flash: { error: 'You are not authorized to perform this action.' }
   end
 
   def check_admin!

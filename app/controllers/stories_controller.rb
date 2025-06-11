@@ -2,11 +2,13 @@
 
 # controller for stories
 class StoriesController < ApplicationController
-  load_and_authorize_resource
-  before_action :stories
+  load_and_authorize_resource # automatically loads @story and @stories and authorizes them
   before_action :writing_sessions, only: %i[show update]
 
-  def index; end
+  def index
+    # filter authorized stories down to only the current user's stories
+    @stories = @stories.where(user: current_user).order(created_at: :desc)
+  end
 
   def new; end
 
@@ -14,7 +16,11 @@ class StoriesController < ApplicationController
     @story = current_user.stories.create(story_params)
     @writing_sessions = []
 
-    redirect_to story_path(@story)
+    if @story.valid?
+      redirect_to story_path(@story)
+    else
+      render :new, status: :unprocessable_entity
+    end
   end
 
   def show
@@ -25,9 +31,11 @@ class StoriesController < ApplicationController
   def edit; end
 
   def update
-    @story.update(story_params)
-
-    render :show
+    if @story.update(story_params)
+      render :show
+    else
+      render :edit, status: :unprocessable_entity
+    end
   end
 
   def destroy
@@ -40,10 +48,6 @@ class StoriesController < ApplicationController
 
   def story_params
     params.require(:story).permit(:title)
-  end
-
-  def stories
-    @stories = current_user.stories.order(created_at: :desc)
   end
 
   def writing_sessions
