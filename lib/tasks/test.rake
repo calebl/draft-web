@@ -1,9 +1,9 @@
 namespace :test do
   desc 'Run tests with coverage'
   task :coverage do
-    require 'simplecov'
-    SimpleCov.start 'rails'
+    ENV['SIMPLECOV'] = 'true'
 
+    # Run all test types
     Rake::Task['test'].invoke
   end
 end
