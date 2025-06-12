@@ -4,7 +4,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 ruby '3.3.8'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 7.1.0'
+gem 'rails', '~> 7.2.0'
 # Use Puma as the app server
 gem 'puma', '~> 6.4'
 # Use SCSS for stylesheets
@@ -22,9 +22,6 @@ gem 'mailerlite'
 gem 'redis', '~> 5.0'
 gem 'stimulus-rails', '~> 1.3'
 gem 'turbo-rails', '~> 1.5'
-
-gem 'delayed_job', '~> 4.1'
-gem 'delayed_job_active_record', '~> 4.1'
 
 # Use Active Storage variant
 # gem 'image_processing', '~> 1.2'
