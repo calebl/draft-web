@@ -1,13 +1,13 @@
 <% content_for :header do %>
   <h3 class="title">Viewing Session</h3>
   <div class="header-actions">
-    <%= link_to 'Continue', edit_story_writing_session_path(@story, @session), class: 'header-action', data: { 'turbo-action': 'replace' } %>
+    <%= link_to 'Continue', edit_story_writing_session_path(@story, @writing_session), class: 'header-action', data: { 'turbo-action': 'replace' } %>
     <%= link_to 'Back', story_writing_sessions_path(@story), class: 'header-action', data: { 'turbo-action': 'restore' } %>
   </div>
 <% end %>
 
-<%= render 'text', text: @session.text %>
+<%= render 'text', text: @writing_session.text %>
 <p>
   <strong>Word count:</strong>
-  <%= @session.word_count %>
+  <%= @writing_session.word_count %>
 </p>

@@ -6,7 +6,7 @@ class WritingSessionsControllerTest < ActionDispatch::IntegrationTest
 
   setup do
     sign_in users(:bob)
-    @session = writing_sessions(:one)
+    @writing_session = writing_sessions(:one)
     @story = stories(:one)
   end
 
@@ -24,7 +24,7 @@ class WritingSessionsControllerTest < ActionDispatch::IntegrationTest
 
   test 'should create session' do
     assert_difference('WritingSession.count') do
-      post story_writing_sessions_url(@story), params: { writing_session: { text: @session.text } }
+      post story_writing_sessions_url(@story), params: { writing_session: { text: @writing_session.text } }
     end
 
     assert_response :see_other
@@ -32,24 +32,24 @@ class WritingSessionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should show session' do
-    get story_writing_session_url(@story, @session)
+    get story_writing_session_url(@story, @writing_session)
     assert_response :success
   end
 
   test 'should get edit' do
-    get edit_story_writing_session_url(@story, @session)
+    get edit_story_writing_session_url(@story, @writing_session)
     assert_response :success
   end
 
   test 'should update session' do
-    patch story_writing_session_url(@story, @session),
-          params: { writing_session: { text: @session.text }, story_id: @story.id }
+    patch story_writing_session_url(@story, @writing_session),
+          params: { writing_session: { text: @writing_session.text }, story_id: @story.id }
     assert_response :see_other
   end
 
   test 'should destroy session' do
     assert_difference('WritingSession.count', -1) do
-      delete story_writing_session_url(@story, @session)
+      delete story_writing_session_url(@story, @writing_session)
     end
 
     assert_redirected_to story_url(@story)
@@ -58,28 +58,28 @@ class WritingSessionsControllerTest < ActionDispatch::IntegrationTest
   test 'should protect viewing writing sessions from other users' do
     sign_in users(:jane)
 
-    get story_writing_session_url(@story, @session)
+    get story_writing_session_url(@story, @writing_session)
     assert_redirected_to root_path
   end
 
   test 'should protect edit writing sessions from other users' do
     sign_in users(:jane)
 
-    get edit_story_writing_session_url(@story, @session)
+    get edit_story_writing_session_url(@story, @writing_session)
     assert_redirected_to root_path
   end
 
   test 'should not allow admin to view writing sessions from other users' do
     sign_in users(:admin)
 
-    get story_writing_session_url(@story, @session)
+    get story_writing_session_url(@story, @writing_session)
     assert_redirected_to root_path
   end
 
   test 'should not allow admin to edit writing sessions from other users' do
     sign_in users(:admin)
 
-    get edit_story_writing_session_url(@story, @session)
+    get edit_story_writing_session_url(@story, @writing_session)
     assert_redirected_to root_path
   end
 end
