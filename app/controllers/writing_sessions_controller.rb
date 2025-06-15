@@ -29,9 +29,9 @@ class WritingSessionsController < ApplicationController
   # POST /writing_sessions
   # POST /writing_sessions.json
   def create
-    text = "<div>#{session_params[:text]}</div>"
+    text = "<div>#{writing_session_params[:text]}</div>"
 
-    @writing_session = @story.writing_sessions.new(session_params.merge(text:, user_id: current_user.id))
+    @writing_session = @story.writing_sessions.new(writing_session_params.merge(text:, user_id: current_user.id))
     @writing_session.word_count = @writing_session.calculate_word_count
 
     respond_to do |format|
@@ -51,7 +51,7 @@ class WritingSessionsController < ApplicationController
   # PATCH/PUT /writing_sessions/1
   # PATCH/PUT /writing_sessions/1.json
   def update
-    @writing_session.text += "<div>#{session_params[:text]}</div>"
+    @writing_session.text += "<div>#{writing_session_params[:text]}</div>"
     @writing_session.word_count = @writing_session.calculate_word_count
 
     respond_to do |format|
@@ -78,7 +78,7 @@ class WritingSessionsController < ApplicationController
   private
 
   # Only allow a list of trusted parameters through.
-  def session_params
+  def writing_session_params
     params.require(:writing_session).permit(:text)
   end
 
