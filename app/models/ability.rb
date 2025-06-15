@@ -8,10 +8,7 @@ class Ability
     #
     return unless user.present?
 
-    if user.admin_role?
-      can :manage, :all
-      can :access, :blazer
-    end
+    can :access, :blazer if user.admin_role?
 
     can :manage, WritingSession, user_id: user.id
     can :manage, Story, user_id: user.id

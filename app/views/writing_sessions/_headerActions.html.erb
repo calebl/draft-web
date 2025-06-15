@@ -1,5 +1,5 @@
-<% if @session.text.blank? %>
-  <%= link_to 'Cancel', story_writing_session_path(@session.story_id, @session), method: :delete, class: 'header-action', data: { turbo_method:'delete' } %>
+<% if @writing_session.text.blank? %>
+  <%= link_to 'Cancel', story_writing_session_path(@writing_session.story_id, @writing_session), method: :delete, class: 'header-action', data: { turbo_method:'delete' } %>
 <% else %>
   <%= link_to 'Done', story_path(@story), class: 'header-action', data: {'turbo-action': 'restore'} %>
 <% end %>
