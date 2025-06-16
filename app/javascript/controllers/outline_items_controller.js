@@ -1,7 +1,5 @@
-import { Controller } from "@hotwired/stimulus"
-import Sortable from "sortablejs"
-import Rails from "@rails/ujs"
-
+import { Controller } from '@hotwired/stimulus'
+import Sortable from 'sortablejs'
 
 export default class extends Controller {
   connect() {
@@ -16,14 +14,16 @@ export default class extends Controller {
   end(event) {
     let id = event.item.dataset.id || event.item.firstElementChild.dataset.id
     let data = new FormData()
-    data.append("outline_item[position]", event.newIndex + 1)
+    data.append('outline_item[position]', event.newIndex + 1)
 
     let url = event.target.dataset.url
 
-    Rails.ajax({
-      url: url.replace(":id", id),
-      type: 'PATCH',
-      data: data
+    fetch(url.replace(':id', id), {
+      method: 'PATCH',
+      body: data,
+      headers: {
+        'Accept': 'text/vnd.turbo-stream.html'
+      }
     })
   }
 }
