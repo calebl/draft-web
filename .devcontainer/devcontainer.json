@@ -1,0 +1,16 @@
+{
+  "name": "Rails Dev Container",
+  "build": {
+    "dockerfile": "../Dockerfile",
+    "context": ".."
+  },
+  "forwardPorts": [3000],
+  "postCreateCommand": "bin/setup",
+  "settings": {
+    "terminal.integrated.defaultProfile.linux": "bash"
+  },
+  "extensions": [
+    "rebornix.Ruby",
+    "castwide.solargraph"
+  ]
+}

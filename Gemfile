@@ -44,6 +44,7 @@ end
 
 group :development do
   # Access an interactive console on exception pages or by calling 'console' anywhere in the code.
+  gem 'dockerfile-rails', '>= 1.7'
   gem 'foreman'
   gem 'guard'
   gem 'guard-livereload', '~> 2.5', require: false
@@ -66,7 +67,7 @@ group :test do
 end
 
 group :production do
-  gem 'pg', '~> 1.5'
+  # gem 'pg', '~> 1.5'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
