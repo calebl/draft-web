@@ -4,14 +4,14 @@ class OutlineItemsController < ApplicationController
   before_action :story
   before_action :outline_item, only: %i[show update destroy]
 
+  def show
+    redirect_to_home unless can? :read, @story
+  end
+
   def new
     redirect_to_home unless can? :create, @story
 
     @outline_item = @outline.outline_items.new
-  end
-
-  def show
-    redirect_to_home unless can? :read, @story
   end
 
   def create
@@ -47,7 +47,7 @@ class OutlineItemsController < ApplicationController
   private
 
   def item_params
-    params.require(:outline_item).permit(:text, :completed, :position)
+    params.expect(outline_item: %i[text completed position])
   end
 
   def story

@@ -50,6 +50,7 @@ group :development do
   gem 'guard-minitest'
   gem 'listen', '~> 3.8'
   gem 'rubocop'
+  gem 'rubocop-rails', require: false
   gem 'solargraph'
   gem 'web-console', '>= 4.2.0'
 end

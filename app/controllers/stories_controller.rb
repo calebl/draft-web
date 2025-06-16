@@ -10,7 +10,14 @@ class StoriesController < ApplicationController
     @stories = @stories.where(user: current_user).order(created_at: :desc)
   end
 
+  def show
+    @word_count_total = @writing_sessions.where.not(word_count: nil).map(&:word_count).sum
+    @next_outline_item = @story.next_outline_item
+  end
+
   def new; end
+
+  def edit; end
 
   def create
     @story = current_user.stories.create(story_params)
@@ -22,13 +29,6 @@ class StoriesController < ApplicationController
       render :new, status: :unprocessable_entity
     end
   end
-
-  def show
-    @word_count_total = @writing_sessions.where.not(word_count: nil).map(&:word_count).sum
-    @next_outline_item = @story.next_outline_item
-  end
-
-  def edit; end
 
   def update
     if @story.update(story_params)
@@ -47,7 +47,7 @@ class StoriesController < ApplicationController
   private
 
   def story_params
-    params.require(:story).permit(:title)
+    params.expect(story: [:title])
   end
 
   def writing_sessions

@@ -1,5 +1,5 @@
 class Story < ApplicationRecord
-  validates_presence_of :title, :user
+  validates :title, presence: true
 
   belongs_to :user
   has_many :writing_sessions, dependent: :destroy

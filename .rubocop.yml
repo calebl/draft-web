@@ -1,0 +1,17 @@
+inherit_from: .rubocop_todo.yml
+
+plugins:
+  - rubocop-rails
+
+inherit_mode:
+  merge:
+    - Exclude
+
+AllCops:
+  NewCops: enable
+  TargetRubyVersion: 3.3
+  TargetRailsVersion: 8.0
+  SuggestExtensions: false
+
+Style/Documentation:
+  Enabled: false
