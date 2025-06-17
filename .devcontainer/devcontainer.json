@@ -1,13 +1,17 @@
 {
   "name": "Draft Dev Container",
   "build": {
-    "dockerfile": "../Dockerfile",
+    "dockerfile": "./Dockerfile",
     "context": ".."
   },
   "forwardPorts": [8080],
-  "postCreateCommand": "bin/setup --skip-server",
+  "postCreateCommand": "bin/setup --skip-server && mkdir -p ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts",
   "settings": {
-    "terminal.integrated.defaultProfile.linux": "bash"
+    "git.path": "/opt/homebrew/bin/git",
+    "terminal.integrated.shell.linux": "/bin/zsh",
+    "terminal.integrated.defaultProfile.linux": "zsh",
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/git:1": {}
   },
   "extensions": [
     "rebornix.Ruby",
