@@ -49,13 +49,11 @@ RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 
 
 # Final stage for app image
-FROM base
-
+FROM base AS development
 
 # Copy built artifacts: gems, application
 COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
 COPY --from=build /rails /rails
-COPY .devcontainer/nginx.conf /etc/nginx/conf.d/default.conf
 
 # Run and own only the runtime files as a non-root user for security
 RUN groupadd --system --gid 1000 rails && \
@@ -67,5 +65,5 @@ USER 1000:1000
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
 # Start the server by default, this can be overwritten at runtime
-EXPOSE 80
-CMD ["./bin/rails", "server"]
+EXPOSE 8080
+CMD ["./bin/rails", "server", "-p", "8080"]

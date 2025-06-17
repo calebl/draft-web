@@ -4,8 +4,8 @@
     "dockerfile": "../Dockerfile",
     "context": ".."
   },
-  "forwardPorts": [3000],
-  "postCreateCommand": "bin/setup",
+  "forwardPorts": [8080],
+  "postCreateCommand": "bin/setup --skip-server",
   "settings": {
     "terminal.integrated.defaultProfile.linux": "bash"
   },
