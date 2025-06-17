@@ -1,5 +1,5 @@
 {
-  "name": "Rails Dev Container",
+  "name": "Draft Dev Container",
   "build": {
     "dockerfile": "../Dockerfile",
     "context": ".."
@@ -12,5 +12,6 @@
   "extensions": [
     "rebornix.Ruby",
     "castwide.solargraph"
-  ]
+  ],
+  "runArgs": ["--name", "draft-dev-container"]
 }
