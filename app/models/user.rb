@@ -4,7 +4,7 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
-  has_many :writing_sessions
+  has_many :writing_sessions, dependent: :destroy
   has_many :stories, dependent: :destroy
 
   after_create :subscribe_to_mailing

@@ -6,7 +6,7 @@ class Ability
   def initialize(user)
     # Define abilities for the passed in user here. For example:
     #
-    return unless user.present?
+    return if user.blank?
 
     can :access, :blazer if user.admin_role?
 
