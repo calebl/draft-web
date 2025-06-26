@@ -60,17 +60,6 @@ Rails.application.configure do
   config.action_mailer.default_url_options = { host: 'example.com' }
   config.action_mailer.delivery_method = :smtp
 
-  # Specify outgoing SMTP server. Remember to add smtp/* credentials via rails credentials:edit.
-  config.action_mailer.smtp_settings = {
-    user_name: Rails.application.credentials.mailer[:username],
-    password: Rails.application.credentials.mailer[:password],
-    address: Rails.application.credentials.mailer[:address],
-    domain: Rails.application.credentials.mailer[:domain],
-    port: Rails.application.credentials.mailer[:port],
-    authentication: Rails.application.credentials.mailer[:authentication],
-    enable_starttls_auto: true
-  }
-
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).
   config.i18n.fallbacks = true
