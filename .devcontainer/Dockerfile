@@ -17,6 +17,7 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
       curl \
       git \
+      vim \
       openssh-client \ 
       libjemalloc2 \
       sqlite3 \
