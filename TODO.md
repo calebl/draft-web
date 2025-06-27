@@ -1,0 +1,2 @@
+- [x] use the write book source code as a reference for Kamal setup
+- [ ] there is no Kamal setup in Writebook. Reference my own what is the recipe project instead

@@ -9,7 +9,6 @@ gem 'rails', '~> 8.0.0'
 gem 'puma', '~> 6.4'
 # Use SCSS for stylesheets
 gem 'sassc-rails'
-# Transpile app-like JavaScript. Read more: https://github.com/rails/webpacker
 
 gem 'acts_as_list'
 gem 'blazer'
@@ -25,6 +24,7 @@ gem 'solid_queue', '~> 1.1'
 gem 'sprockets-rails'
 gem 'stimulus-rails', '~> 1.3'
 gem 'turbo-rails', '~> 1.5'
+gem 'thruster'
 
 # Use Active Storage variant
 # gem 'image_processing', '~> 1.2'
