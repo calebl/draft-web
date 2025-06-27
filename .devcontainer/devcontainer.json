@@ -5,7 +5,7 @@
     "context": ".."
   },
   "forwardPorts": [8080],
-  "postCreateCommand": "bin/setup --skip-server && mkdir -p ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts",
+  "postCreateCommand": "bash .devcontainer/setup.sh",
   "settings": {
     "git.path": "/opt/homebrew/bin/git",
     "terminal.integrated.shell.linux": "/bin/zsh",

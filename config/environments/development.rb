@@ -33,19 +33,8 @@ Rails.application.configure do
 
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false
-  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.delivery_method = :letter_opener
 
-  if Rails.application.credentials.mailer
-    config.action_mailer.smtp_settings = {
-      user_name: Rails.application.credentials.mailer[:username],
-      password: Rails.application.credentials.mailer[:password],
-      address: Rails.application.credentials.mailer[:address],
-      domain: Rails.application.credentials.mailer[:domain],
-      port: Rails.application.credentials.mailer[:port],
-      authentication: Rails.application.credentials.mailer[:authentication],
-      enable_starttls_auto: true
-    }
-  end
   # Make template changes take effect immediately.
   config.action_mailer.perform_caching = false
 
