@@ -21,6 +21,7 @@ gem 'mail', '~> 2.7'
 gem 'mailerlite'
 gem 'solid_queue', '~> 1.1'
 gem 'sprockets-rails'
+gem 'sqlite3'
 gem 'stimulus-rails', '~> 1.3'
 gem 'turbo-rails', '~> 1.5'
 gem 'thruster'
@@ -35,8 +36,6 @@ gem 'net-pop', require: false
 gem 'net-smtp', require: false
 
 group :development, :test do
-  # Use sqlite3 as the database for Active Record
-  gem 'sqlite3'
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
   gem 'htmlbeautifier'
