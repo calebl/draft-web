@@ -13,6 +13,24 @@
   <% end %>
 
   <div class="field">
+    <%= f.label :theme, "Theme" %><br />
+    <div class="theme-options">
+      <%= f.label :theme_light do %>
+        <%= f.radio_button :theme, "light" %>
+        Light
+      <% end %>
+      <%= f.label :theme_dark do %>
+        <%= f.radio_button :theme, "dark" %>
+        Dark
+      <% end %>
+      <%= f.label :theme_system do %>
+        <%= f.radio_button :theme, "system" %>
+        System
+      <% end %>
+    </div>
+  </div>
+
+  <div class="field">
     <%= f.label :password %> <i>(leave blank if you don't want to change it)</i><br />
     <%= f.password_field :password, autocomplete: "new-password", placeholder: "New Password" %>
     <% if @minimum_password_length %>

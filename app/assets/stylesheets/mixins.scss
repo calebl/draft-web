@@ -34,26 +34,22 @@
 }
 
 @mixin logo-darkmode {
-  @media (prefers-color-scheme: dark) {
-    .logo {
-      &.light {
-        display: none;
-      }
-      &.dark {
-        display: block;
-      }
+  .logo {
+    &.light {
+      display: block;
     }
-
-    transition: ease all 1s;
+    &.dark {
+      display: none;
+    }
   }
 
-  @media (prefers-color-scheme: light) {
+  [data-theme="dark"] & {
     .logo {
       &.light {
-        display: block;
+        display: none;
       }
       &.dark {
-        display: none;
+        display: block;
       }
     }
 
@@ -84,7 +80,7 @@
       }
     }
 
-    @media (prefers-color-scheme: dark) {
+    [data-theme="dark"] & {
       textarea {
         background: #202020;
         color: lightgray;

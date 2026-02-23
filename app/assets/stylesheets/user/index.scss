@@ -39,15 +39,33 @@
             opacity: 1;
           }
 
-          @media (prefers-color-scheme: light) {
-            border: 1px solid black;
-            color: black;
-          }
+          border: 1px solid black;
+          color: black;
 
-          @media (prefers-color-scheme: dark) {
+          [data-theme="dark"] & {
             border: 1px solid white;
             color: white;
           }
+        }
+      }
+
+      .theme-options {
+        display: flex;
+        gap: 16px;
+        margin-top: 5px;
+
+        label {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          cursor: pointer;
+        }
+
+        input[type="radio"] {
+          width: auto;
+          margin: 0;
+          padding: 0;
+          border: none;
         }
       }
 
@@ -65,13 +83,11 @@
               opacity: 1;
           }
 
-          @media (prefers-color-scheme: light) {
-            border: 1px solid black;
-            color: white;
-            background: black;
-          }
+          border: 1px solid black;
+          color: white;
+          background: black;
 
-          @media (prefers-color-scheme: dark) {
+          [data-theme="dark"] & {
             border: 1px solid white;
             color: black;
             background: white;
