@@ -14,8 +14,7 @@
 </head>
 
 <% theme_pref = current_user&.theme || "system" %>
-<% resolved_theme = theme_pref == "system" ? nil : theme_pref %>
-<body class="<%= controller.controller_name %> <%= controller.action_name %>" data-controller="theme" data-theme-preference="<%= theme_pref %>" <%= "data-theme=\"#{resolved_theme}\"" if resolved_theme %>>
+<body class="<%= controller.controller_name %> <%= controller.action_name %>" data-controller="theme" data-theme-preference="<%= theme_pref %>" data-theme="<%= theme_pref unless theme_pref == "system" %>">
     <% unless flash.empty? %>
       <script type="text/javascript" data-turbo-cache="false">
         toastr.options.preventDuplicates = true;
