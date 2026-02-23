@@ -1,7 +1,5 @@
 <!DOCTYPE html>
-<% theme_pref = current_user&.theme || "system" %>
-<% resolved_theme = theme_pref == "system" ? nil : theme_pref %>
-<html data-controller="theme" data-theme-preference="<%= theme_pref %>" <%= "data-theme=\"#{resolved_theme}\"" if resolved_theme %>>
+<html>
 
 <head>
     <title><%= @title || 'Draft' %></title>
@@ -15,7 +13,9 @@
     <%= javascript_importmap_tags %>
 </head>
 
-<body class="<%= controller.controller_name %> <%= controller.action_name %>">
+<% theme_pref = current_user&.theme || "system" %>
+<% resolved_theme = theme_pref == "system" ? nil : theme_pref %>
+<body class="<%= controller.controller_name %> <%= controller.action_name %>" data-controller="theme" data-theme-preference="<%= theme_pref %>" <%= "data-theme=\"#{resolved_theme}\"" if resolved_theme %>>
     <% unless flash.empty? %>
       <script type="text/javascript" data-turbo-cache="false">
         toastr.options.preventDuplicates = true;

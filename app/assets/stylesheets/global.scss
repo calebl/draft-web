@@ -139,12 +139,10 @@ textarea {
   display: none;
 }
 
-[data-theme="dark"] {
-  body {
-    background: $dark;
-    color: $light;
-    transition: ease all 1s;
-  }
+body[data-theme="dark"] {
+  background: $dark;
+  color: $light;
+  transition: ease all 1s;
 
   a {
     color: $light;
