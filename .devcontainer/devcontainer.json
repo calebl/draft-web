@@ -4,7 +4,8 @@
     "dockerfile": "./Dockerfile",
     "context": ".."
   },
-  "forwardPorts": [8080],
+  "appPort": ["10000:8080"],
+  "forwardPorts": [10000],
   "postCreateCommand": "bin/setup --skip-server && mkdir -p ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts",
   "settings": {
     "git.path": "/opt/homebrew/bin/git",
