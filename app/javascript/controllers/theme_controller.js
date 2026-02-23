@@ -5,10 +5,8 @@ export default class extends Controller {
     this.mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
     this.handleSystemChange = this.handleSystemChange.bind(this)
 
-    if (this.element.dataset.themePreference === "system") {
-      this.applySystemTheme()
-      this.mediaQuery.addEventListener("change", this.handleSystemChange)
-    }
+    this.applyTheme()
+    this.mediaQuery.addEventListener("change", this.handleSystemChange)
   }
 
   disconnect() {
@@ -18,6 +16,15 @@ export default class extends Controller {
   handleSystemChange() {
     if (this.element.dataset.themePreference === "system") {
       this.applySystemTheme()
+    }
+  }
+
+  applyTheme() {
+    const pref = this.element.dataset.themePreference
+    if (pref === "system") {
+      this.applySystemTheme()
+    } else {
+      this.element.dataset.theme = pref
     }
   }
 
