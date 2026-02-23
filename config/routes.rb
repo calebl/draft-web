@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   mount Blazer::Engine, at: 'blazer'
 
-  devise_for :user
+  devise_for :user, controllers: { registrations: 'users/registrations' }
 
   resources :stories do
     resources :writing_sessions
