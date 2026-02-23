@@ -13,22 +13,8 @@
     <%= javascript_importmap_tags %>
 </head>
 
-<% theme_pref = current_user&.theme || "system" %>
-<body class="<%= controller.controller_name %> <%= controller.action_name %>" data-theme="<%= theme_pref %>">
-    <script data-turbo-cache="false">
-      (function() {
-        var pref = document.body.getAttribute("data-theme");
-        if (pref === "system") {
-          var isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-          document.body.setAttribute("data-theme", isDark ? "dark" : "light");
-        }
-        window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function(e) {
-          if ("<%= theme_pref %>" === "system") {
-            document.body.setAttribute("data-theme", e.matches ? "dark" : "light");
-          }
-        });
-      })();
-    </script>
+<body class="<%= controller.controller_name %> <%= controller.action_name %>" data-theme="<%= theme_preference %>">
+    <%= render "shared/theme" %>
     <% unless flash.empty? %>
       <script type="text/javascript" data-turbo-cache="false">
         toastr.options.preventDuplicates = true;
