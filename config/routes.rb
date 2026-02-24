@@ -3,6 +3,10 @@ Rails.application.routes.draw do
 
   devise_for :user, controllers: { registrations: 'users/registrations' }
 
+  namespace :users do
+    resource :theme, only: [:update]
+  end
+
   resources :stories do
     resources :writing_sessions
     resource :outline, on: :member do

@@ -2,6 +2,11 @@
   <div class="header">
     <h3 class="title"></h3>
     <div class="header-actions">
+      <button class="header-action theme-toggle" data-theme-toggle data-current-theme="<%= theme_preference %>" title="Toggle theme" aria-label="Toggle theme">
+        <span data-theme-icon="light"><i class="fas fa-sun"></i></span>
+        <span data-theme-icon="dark"><i class="fas fa-moon"></i></span>
+        <span data-theme-icon="system"><i class="fas fa-desktop"></i></span>
+      </button>
       <%= link_to 'Account', edit_user_registration_path, class: 'header-action', data: {'turbo-action': :replace} %>
       <%= link_to 'Logout', destroy_user_session_path, method: 'DELETE', class: 'header-action', data: {'turbo-action': :restore, "turbo-method": :delete} %>
     </div>
@@ -28,3 +33,43 @@
     </div>
   </div>
 </div>
+
+<script data-turbo-cache="false">
+  (function() {
+    var THEMES = ["light", "dark", "system"];
+    var btn = document.querySelector("[data-theme-toggle]");
+    if (!btn) return;
+
+    function syncIcons(theme) {
+      btn.querySelectorAll("[data-theme-icon]").forEach(function(el) {
+        el.style.display = el.getAttribute("data-theme-icon") === theme ? "" : "none";
+      });
+      btn.setAttribute("data-current-theme", theme);
+    }
+
+    syncIcons(btn.getAttribute("data-current-theme"));
+
+    btn.addEventListener("click", function() {
+      var current = btn.getAttribute("data-current-theme");
+      var next = THEMES[(THEMES.indexOf(current) + 1) % THEMES.length];
+
+      var resolved = next === "system"
+        ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+        : next;
+      document.body.setAttribute("data-theme", resolved);
+      window.__themePref = next;
+      syncIcons(next);
+
+      var csrf = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
+      fetch("<%= users_theme_path %>", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": csrf,
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({ theme: next })
+      });
+    });
+  })();
+</script>

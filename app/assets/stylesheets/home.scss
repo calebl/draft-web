@@ -79,5 +79,28 @@
     margin-top: 20px;
     opacity: 0.4;
   }
+
+  .theme-toggle {
+    border: none !important;
+    background: none;
+    padding: 4px 8px;
+    cursor: pointer;
+    color: gray;
+    font-size: 14px;
+    line-height: 30px;
+
+    &:hover {
+      color: black;
+      background: lightgray;
+      border-radius: $border-radius;
+    }
+
+    [data-theme="dark"] & {
+      &:hover {
+        color: white;
+        background: #202020;
+      }
+    }
+  }
 }
 
