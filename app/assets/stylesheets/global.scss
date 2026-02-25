@@ -95,8 +95,8 @@ button, input[type=submit] {
   border-radius: $border-radius;
   padding: 8px 16px;
   cursor: pointer;
-  
-  @media (prefers-color-scheme: dark) {
+
+  [data-theme="dark"] & {
     color: $white;
     border: 1px solid $light;
 
@@ -104,7 +104,7 @@ button, input[type=submit] {
       border-color: $white;
     }
   }
-  
+
 }
 
 input[type=text] {
@@ -114,7 +114,7 @@ input[type=text] {
   border-bottom: 1px solid $dark;
   outline: none;
 
-  @media (prefers-color-scheme: dark) {
+  [data-theme="dark"] & {
     color: $light;
     border-bottom: 1px solid $light;
   }
@@ -130,7 +130,7 @@ textarea {
   padding: 0 8px;
   resize: none;
 
-  @media (prefers-color-scheme: dark) {
+  [data-theme="dark"] & {
     color: $light;
   }
 }
@@ -139,14 +139,10 @@ textarea {
   display: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  //transition: all 1s;
-
-  body {
-    background: $dark;
-    color: $light;
-    transition: ease all 1s;
-  }
+body[data-theme="dark"] {
+  background: $dark;
+  color: $light;
+  transition: ease all 1s;
 
   a {
     color: $light;

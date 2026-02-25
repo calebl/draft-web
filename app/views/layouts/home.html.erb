@@ -12,7 +12,8 @@
     <script src="https://use.fontawesome.com/releases/v5.15.4/js/all.js" data-mutate-approach="sync"></script>
 </head>
 
-<body class="<%= controller.controller_name %> <%= controller.action_name %>">
+<body class="<%= controller.controller_name %> <%= controller.action_name %>" data-theme="<%= theme_preference %>">
+    <%= render "shared/theme" %>
     <% unless flash.empty? %>
       <script type="text/javascript">
         <% flash.each do |f| %>

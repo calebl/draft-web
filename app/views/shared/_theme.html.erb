@@ -1,0 +1,15 @@
+<script data-turbo-cache="false">
+  (function() {
+    window.__themePref = "<%= theme_preference %>";
+    var pref = document.body.getAttribute("data-theme");
+    if (pref === "system") {
+      var isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      document.body.setAttribute("data-theme", isDark ? "dark" : "light");
+    }
+    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function(e) {
+      if (window.__themePref === "system") {
+        document.body.setAttribute("data-theme", e.matches ? "dark" : "light");
+      }
+    });
+  })();
+</script>

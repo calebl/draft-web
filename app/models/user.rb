@@ -7,6 +7,8 @@ class User < ApplicationRecord
   has_many :writing_sessions, dependent: :destroy
   has_many :stories, dependent: :destroy
 
+  validates :theme, inclusion: { in: %w[light dark system] }
+
   after_create :subscribe_to_mailing
 
   def password_required?

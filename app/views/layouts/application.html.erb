@@ -13,7 +13,8 @@
     <%= javascript_importmap_tags %>
 </head>
 
-<body class="<%= controller.controller_name %> <%= controller.action_name %>">
+<body class="<%= controller.controller_name %> <%= controller.action_name %>" data-theme="<%= theme_preference %>">
+    <%= render "shared/theme" %>
     <% unless flash.empty? %>
       <script type="text/javascript" data-turbo-cache="false">
         toastr.options.preventDuplicates = true;

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_12_164159) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_23_160211) do
   create_table "blazer_audits", force: :cascade do |t|
     t.integer "user_id"
     t.integer "query_id"
@@ -103,6 +103,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_12_164159) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "admin_role"
+    t.string "theme", default: "system", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end

@@ -20,7 +20,7 @@
       border: 1px solid $dark;
       padding: 10px;
 
-      @media (prefers-color-scheme: dark) {
+      [data-theme="dark"] & {
         border: 1px solid $light;
       }
 
@@ -60,7 +60,7 @@
     }
   }
 
-  @media (prefers-color-scheme: dark) {
+  [data-theme="dark"] & {
     .primary-link,
     .secondary-link {
       border-color: lightgray;
@@ -78,6 +78,29 @@
     height: 40px;
     margin-top: 20px;
     opacity: 0.4;
+  }
+
+  .theme-toggle {
+    border: none !important;
+    background: none;
+    padding: 4px 8px;
+    cursor: pointer;
+    color: gray;
+    font-size: 14px;
+    line-height: 30px;
+
+    &:hover {
+      color: black;
+      background: lightgray;
+      border-radius: $border-radius;
+    }
+
+    [data-theme="dark"] & {
+      &:hover {
+        color: white;
+        background: #202020;
+      }
+    }
   }
 }
 
