@@ -4,45 +4,25 @@ set -euo pipefail
 IMAGE_NAME="draft"
 TAG="${1:-latest}"
 CONTAINER_NAME="draft"
-NETWORK="proxy"
-HOSTNAME="draft.localhost"
+PORT="${PORT:-3000}"
 
-# Ensure the proxy network exists
-if ! docker network inspect "$NETWORK" &>/dev/null; then
-  echo "Creating docker network '${NETWORK}'..."
-  docker network create "$NETWORK"
-fi
-
-# Ensure Traefik is running
-if ! docker ps --format '{{.Names}}' | grep -q '^traefik$'; then
-  echo "Starting Traefik..."
-  docker run -d \
-    --name traefik \
-    --network "$NETWORK" \
-    -p 80:80 \
-    -v /var/run/docker.sock:/var/run/docker.sock \
-    traefik:v3.0 \
-    --providers.docker \
-    --providers.docker.exposedByDefault=false \
-    --entrypoints.web.address=:80
-fi
-
-# Remove existing container if stopped
+# Remove existing container if present
 if docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
   echo "Removing existing '${CONTAINER_NAME}' container..."
   docker rm -f "$CONTAINER_NAME"
 fi
 
-echo "Starting ${IMAGE_NAME}:${TAG} at http://${HOSTNAME}..."
+echo "Starting ${IMAGE_NAME}:${TAG} on port ${PORT}..."
 
 docker run -d \
   --name "$CONTAINER_NAME" \
-  --network "$NETWORK" \
-  -v draft-db:/rails/db \
+  -p "${PORT}:3000" \
+  -e RAILS_ASSUME_SSL=false \
+  -e RAILS_FORCE_SSL=false \
+  -e RAILS_MASTER_KEY="${RAILS_MASTER_KEY:-$(cat config/credentials/production.key)}" \
+  -e DATABASE_URL="sqlite3:/rails/data/production.sqlite3" \
+  -v draft-data:/rails/data \
   -v draft-storage:/rails/storage \
-  -l traefik.enable=true \
-  -l "traefik.http.routers.draft.rule=Host(\`${HOSTNAME}\`)" \
-  -l traefik.http.services.draft.loadbalancer.server.port=3000 \
   "${IMAGE_NAME}:${TAG}"
 
-echo "Running at http://${HOSTNAME}"
+echo "Running at http://draft.localhost:${PORT}"
