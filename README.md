@@ -51,7 +51,7 @@ This tags the image as both `draft:<tag>` and `draft:<git-sha>`.
 bin/docker-run
 ```
 
-The app will be available at [http://draft.localhost:3000](http://draft.localhost:3000). To use a different port:
+The app will be available at [http://draft.localhost](http://draft.localhost). To use a different port:
 
 ```sh
 PORT=3001 bin/docker-run

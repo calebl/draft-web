@@ -4,7 +4,7 @@ set -euo pipefail
 IMAGE_NAME="draft"
 TAG="${1:-latest}"
 CONTAINER_NAME="draft"
-PORT="${PORT:-3000}"
+PORT="${PORT:-80}"
 
 # Remove existing container if present
 if docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
@@ -25,4 +25,8 @@ docker run -d \
   -v draft-storage:/rails/storage \
   "${IMAGE_NAME}:${TAG}"
 
-echo "Running at http://draft.localhost:${PORT}"
+if [ "$PORT" = "80" ]; then
+  echo "Running at http://draft.localhost"
+else
+  echo "Running at http://draft.localhost:${PORT}"
+fi
