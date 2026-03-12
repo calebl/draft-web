@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+IMAGE_NAME="draft"
+TAG="${1:-latest}"
+
+# Use git SHA as additional tag when available
+GIT_SHA=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+
+echo "Building ${IMAGE_NAME}:${TAG} (git: ${GIT_SHA})..."
+
+docker build \
+  -t "${IMAGE_NAME}:${TAG}" \
+  -t "${IMAGE_NAME}:${GIT_SHA}" \
+  .
+
+echo ""
+echo "Built images:"
+echo "  ${IMAGE_NAME}:${TAG}"
+echo "  ${IMAGE_NAME}:${GIT_SHA}"
+echo ""
+echo "Run with:"
+echo "  docker run -p 3000:3000 ${IMAGE_NAME}:${TAG}"
