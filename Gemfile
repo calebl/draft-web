@@ -23,6 +23,7 @@ gem 'redis', '~> 5.0'
 gem 'solid_queue', '~> 1.1'
 gem 'sprockets-rails'
 gem 'stimulus-rails', '~> 1.3'
+gem 'sqlite3'
 gem 'turbo-rails', '~> 1.5'
 
 # Use Active Storage variant
@@ -35,8 +36,6 @@ gem 'net-pop', require: false
 gem 'net-smtp', require: false
 
 group :development, :test do
-  # Use sqlite3 as the database for Active Record
-  gem 'sqlite3'
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
   gem 'htmlbeautifier'
@@ -64,10 +63,6 @@ group :test do
   gem 'rails-controller-testing'
   gem 'shoulda', '~> 4.0'
   gem 'simplecov', require: false
-end
-
-group :production do
-  # gem 'pg', '~> 1.5'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
