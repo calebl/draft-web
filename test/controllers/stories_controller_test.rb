@@ -2,10 +2,8 @@ require 'test_helper'
 require 'json'
 
 class StoriesControllerTest < ActionDispatch::IntegrationTest
-  include Devise::Test::IntegrationHelpers
-
   setup do
-    sign_in users(:bob)
+    act_as users(:bob)
   end
 
   context '#index' do
@@ -17,7 +15,7 @@ class StoriesControllerTest < ActionDispatch::IntegrationTest
     end
 
     should 'restrict admin to only their own stories' do
-      sign_in users(:admin)
+      act_as users(:admin)
 
       get stories_url
       assert_response :success
@@ -58,7 +56,7 @@ class StoriesControllerTest < ActionDispatch::IntegrationTest
       3.times do
         @writing_sessions << @story.writing_sessions.create!(word_count: 100, user: users(:bob))
       end
-      sign_in users(:bob)
+      act_as users(:bob)
     end
 
     should 'return story' do

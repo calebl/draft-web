@@ -1,10 +1,8 @@
 require 'test_helper'
 
 class StoriesTest < ActionDispatch::IntegrationTest
-  include Devise::Test::IntegrationHelpers
-
   setup do
-    sign_in users(:bob)
+    act_as users(:bob)
   end
 
   test 'show stories list' do

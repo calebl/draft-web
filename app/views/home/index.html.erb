@@ -7,8 +7,6 @@
         <span data-theme-icon="dark"><i class="fas fa-moon"></i></span>
         <span data-theme-icon="system"><i class="fas fa-desktop"></i></span>
       </button>
-      <%= link_to 'Account', edit_user_registration_path, class: 'header-action', data: {'turbo-action': :replace} %>
-      <%= link_to 'Logout', destroy_user_session_path, method: 'DELETE', class: 'header-action', data: {'turbo-action': :restore, "turbo-method": :delete} %>
     </div>
   </div>
   <div class="container columns">

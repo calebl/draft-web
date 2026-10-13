@@ -1,8 +1,6 @@
 Rails.application.routes.draw do
   mount Blazer::Engine, at: 'blazer'
 
-  devise_for :user, controllers: { registrations: 'users/registrations' }
-
   namespace :users do
     resource :theme, only: [:update]
   end

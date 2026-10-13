@@ -1,10 +1,8 @@
 require 'test_helper'
 
 class HomeTest < ActionDispatch::IntegrationTest
-  include Devise::Test::IntegrationHelpers
-
   setup do
-    sign_in users(:bob)
+    act_as users(:bob)
   end
 
   test 'show main after sign in' do
@@ -17,7 +15,7 @@ class HomeTest < ActionDispatch::IntegrationTest
   end
 
   test 'blazer route gives access denied for non admin' do
-    sign_in users(:bob)
+    act_as users(:bob)
 
     get blazer_path
     assert_equal 302, status
@@ -28,7 +26,7 @@ class HomeTest < ActionDispatch::IntegrationTest
   end
 
   test 'blazer route gives success for admin' do
-    sign_in users(:admin)
+    act_as users(:admin)
 
     get blazer_path
     assert_equal 200, status
