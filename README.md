@@ -43,7 +43,7 @@ You can easily set up and run this project in a [VS Code Devcontainer](https://c
      ```sh
      bin/dev
      ```
-   - The app will be available at [http://localhost:8080](http://localhost:8080) on your host machine.
+   - The app will be available at [http://localhost:10000](http://localhost:10000) on your host machine.
 
 ## Up and Running
 * the devcontainer.json configuration will also copy your ssh settings for github to the docker container so you can

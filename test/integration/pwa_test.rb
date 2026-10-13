@@ -4,10 +4,10 @@ class PwaTest < ActionDispatch::IntegrationTest
   test 'manifest.json is served with correct content type' do
     get '/manifest.json'
     assert_response :success
-    manifest = JSON.parse(response.body)
+    manifest = response.parsed_body
     assert_equal 'Draft', manifest['name']
     assert_equal 'standalone', manifest['display']
-    assert manifest['icons'].any? { |icon| icon['sizes'] == '512x512' }
+    assert(manifest['icons'].any? { |icon| icon['sizes'] == '512x512' })
   end
 
   test 'service worker is served' do
