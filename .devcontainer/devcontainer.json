@@ -4,7 +4,7 @@
     "dockerfile": "./Dockerfile",
     "context": ".."
   },
-  "appPort": ["10000:8080"],
+  "appPort": ["127.0.0.1:10000:8080"],
   "forwardPorts": [10000],
   "postCreateCommand": "bin/setup --skip-server && mkdir -p ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts",
   "settings": {

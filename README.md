@@ -1,9 +1,29 @@
 # Getting Started
 
-## Requirements
-* install ruby on rails: http://www.installrails.com/
+Draft runs as a local app for a single person: there is no sign up or log in.
+On first visit it creates a local user that owns your stories. If you point it
+at an existing database, it acts as the oldest account in it.
 
-## Running in a Devcontainer (Recommended)
+## Running Locally
+
+Requires Ruby 3.3.8 (see `.tool-versions`; `mise install` or `asdf install`
+will fetch it) and SQLite.
+
+```sh
+bin/setup     # install gems, prepare the database, start the server
+```
+
+Then open [http://localhost:3000](http://localhost:3000). After the first run,
+start the server with `bin/dev` (set `PORT` to use a different port).
+
+Run the tests with:
+
+```sh
+bin/rails test
+bin/rails test:system   # needs Chrome
+```
+
+## Running in a Devcontainer
 You can easily set up and run this project in a [VS Code Devcontainer](https://code.visualstudio.com/docs/devcontainers/containers):
 
 1. **Open in VS Code/Cursor**
@@ -23,7 +43,7 @@ You can easily set up and run this project in a [VS Code Devcontainer](https://c
      ```sh
      bin/dev
      ```
-   - The app will be available at [http://localhost:8080](http://localhost:8080) on your host machine.
+   - The app will be available at [http://localhost:10000](http://localhost:10000) on your host machine.
 
 ## Up and Running
 * the devcontainer.json configuration will also copy your ssh settings for github to the docker container so you can

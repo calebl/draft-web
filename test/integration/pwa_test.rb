@@ -1,15 +1,13 @@
 require 'test_helper'
 
 class PwaTest < ActionDispatch::IntegrationTest
-  include Devise::Test::IntegrationHelpers
-
   test 'manifest.json is served with correct content type' do
     get '/manifest.json'
     assert_response :success
-    manifest = JSON.parse(response.body)
+    manifest = response.parsed_body
     assert_equal 'Draft', manifest['name']
     assert_equal 'standalone', manifest['display']
-    assert manifest['icons'].any? { |icon| icon['sizes'] == '512x512' }
+    assert(manifest['icons'].any? { |icon| icon['sizes'] == '512x512' })
   end
 
   test 'service worker is served' do
@@ -25,7 +23,7 @@ class PwaTest < ActionDispatch::IntegrationTest
   end
 
   test 'home layout includes PWA tags' do
-    sign_in users(:bob)
+    act_as users(:bob)
     get root_path
     assert_response :success
 
@@ -36,7 +34,7 @@ class PwaTest < ActionDispatch::IntegrationTest
   end
 
   test 'application layout includes PWA tags' do
-    sign_in users(:bob)
+    act_as users(:bob)
     get stories_path
     assert_response :success
 

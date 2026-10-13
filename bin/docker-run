@@ -16,7 +16,7 @@ echo "Starting ${IMAGE_NAME}:${TAG} on port ${PORT}..."
 
 docker run -d \
   --name "$CONTAINER_NAME" \
-  -p "${PORT}:3000" \
+  -p "127.0.0.1:${PORT}:3000" \
   -e RAILS_ASSUME_SSL=false \
   -e RAILS_FORCE_SSL=false \
   -e RAILS_MASTER_KEY="${RAILS_MASTER_KEY:-$(cat config/credentials/production.key)}" \

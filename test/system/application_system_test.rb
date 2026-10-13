@@ -2,14 +2,9 @@ require 'test_helper'
 
 class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   driven_by :selenium, using: :headless_chrome
-  include Devise::Test::IntegrationHelpers
 
   setup do
-    sign_in users(:bob)
-  end
-
-  def teardown
-    sign_out users(:bob)
+    act_as users(:bob)
   end
 
   test 'Create a story and write' do

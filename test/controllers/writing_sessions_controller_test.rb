@@ -2,10 +2,8 @@ require 'test_helper'
 require 'json'
 
 class WritingSessionsControllerTest < ActionDispatch::IntegrationTest
-  include Devise::Test::IntegrationHelpers
-
   setup do
-    sign_in users(:bob)
+    act_as users(:bob)
     @writing_session = writing_sessions(:one)
     @story = stories(:one)
   end
@@ -56,28 +54,28 @@ class WritingSessionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should protect viewing writing sessions from other users' do
-    sign_in users(:jane)
+    act_as users(:jane)
 
     get story_writing_session_url(@story, @writing_session)
     assert_redirected_to root_path
   end
 
   test 'should protect edit writing sessions from other users' do
-    sign_in users(:jane)
+    act_as users(:jane)
 
     get edit_story_writing_session_url(@story, @writing_session)
     assert_redirected_to root_path
   end
 
   test 'should not allow admin to view writing sessions from other users' do
-    sign_in users(:admin)
+    act_as users(:admin)
 
     get story_writing_session_url(@story, @writing_session)
     assert_redirected_to root_path
   end
 
   test 'should not allow admin to edit writing sessions from other users' do
-    sign_in users(:admin)
+    act_as users(:admin)
 
     get edit_story_writing_session_url(@story, @writing_session)
     assert_redirected_to root_path
