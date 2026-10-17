@@ -78,3 +78,9 @@ PORT=3001 bin/docker-run
 ```
 
 Named volumes (`draft-data` and `draft-storage`) persist the database and uploaded files across container restarts.
+
+### Allowed hosts
+
+In production, set `RAILS_ALLOWED_HOSTS` to a comma-separated list of host names or
+addresses (for example `myhost.example.ts.net,100.64.0.1`) to reject requests for any
+other `Host`. When it is unset, every host is accepted.
