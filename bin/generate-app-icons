@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# Regenerates the home-screen and PWA icons from the "draft" wordmark in
+# app/assets/images/LogoLight.png. Requires ImageMagick 7 (`magick`).
+#
+# The icons are opaque (no alpha) so iOS does not composite the wallpaper
+# behind them, and the wordmark is thickened so it stays legible at ~60px.
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+SOURCE=app/assets/images/LogoLight.png
+BACKGROUND="#ffffff" # matches manifest background_color / theme_color
+INK="#101010"        # $dark in app/assets/stylesheets/variables.scss
+THICKEN=8            # dilation radius, in source pixels
+
+# render SIZE MARK_WIDTH OUTPUT
+render() {
+  magick "$SOURCE" -alpha extract -trim +repage \
+    -morphology Dilate "Disk:$THICKEN" \
+    -resize "${2}x" \
+    -background black -gravity center -extent "${1}x${1}" \
+    -colorspace sRGB -type TrueColor +level-colors "$BACKGROUND,$INK" \
+    -alpha off -strip -define png:color-type=2 "$3"
+}
+
+# Regular icons: wordmark spans ~85% of the width.
+render 180 154 public/apple-touch-icon.png
+render 180 154 public/apple-touch-icon-precomposed.png
+render 192 164 public/icons/icon-192x192.png
+render 512 436 public/icons/icon-512x512.png
+# Maskable: keep the whole mark inside the 80% safe-zone circle.
+render 512 340 public/icons/icon-maskable-512x512.png

@@ -8,6 +8,17 @@ class PwaTest < ActionDispatch::IntegrationTest
     assert_equal 'Draft', manifest['name']
     assert_equal 'standalone', manifest['display']
     assert(manifest['icons'].any? { |icon| icon['sizes'] == '512x512' })
+    assert(manifest['icons'].any? { |icon| icon['purpose'] == 'maskable' })
+  end
+
+  test 'home screen icons exist and are opaque' do
+    manifest = JSON.parse(Rails.public_path.join('manifest.json').read)
+    paths = ['/apple-touch-icon.png'] + manifest['icons'].pluck('src')
+    paths.each do |path|
+      png = Rails.public_path.join(path.delete_prefix('/')).binread
+      # IHDR colour type byte: 2 = truecolour without alpha.
+      assert_equal 2, png.getbyte(25), "#{path} should have no alpha channel"
+    end
   end
 
   test 'service worker is served' do
