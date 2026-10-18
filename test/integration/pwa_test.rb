@@ -11,13 +11,24 @@ class PwaTest < ActionDispatch::IntegrationTest
     assert(manifest['icons'].any? { |icon| icon['purpose'] == 'maskable' })
   end
 
-  test 'home screen icons exist and are opaque' do
+  # IHDR colour type byte: 2 = truecolour without alpha, 6 = with alpha.
+  def png_color_type(path)
+    Rails.public_path.join(path.delete_prefix('/')).binread.getbyte(25)
+  end
+
+  test 'manifest launcher icons are opaque' do
     manifest = JSON.parse(Rails.public_path.join('manifest.json').read)
-    paths = ['/apple-touch-icon.png'] + manifest['icons'].pluck('src')
-    paths.each do |path|
-      png = Rails.public_path.join(path.delete_prefix('/')).binread
-      # IHDR colour type byte: 2 = truecolour without alpha.
-      assert_equal 2, png.getbyte(25), "#{path} should have no alpha channel"
+    manifest['icons'].reject { |icon| icon['purpose'] == 'monochrome' }.each do |icon|
+      assert_equal 2, png_color_type(icon['src']), "#{icon['src']} should have no alpha channel"
+    end
+  end
+
+  test 'themeable icons keep a transparent background' do
+    manifest = JSON.parse(Rails.public_path.join('manifest.json').read)
+    monochrome = manifest['icons'].select { |icon| icon['purpose'] == 'monochrome' }.pluck('src')
+    assert_not_empty monochrome
+    (['/apple-touch-icon.png'] + monochrome).each do |path|
+      assert_equal 6, png_color_type(path), "#{path} should have an alpha channel"
     end
   end
 

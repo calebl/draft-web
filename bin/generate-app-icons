@@ -2,19 +2,24 @@
 # Regenerates the home-screen and PWA icons from the "draft" wordmark in
 # app/assets/images/LogoLight.png. Requires ImageMagick 7 (`magick`).
 #
-# The icons are opaque (no alpha) so iOS does not composite the wallpaper
-# behind them, and the wordmark is thickened so it stays legible at ~60px.
+# The wordmark is white and thickened so it stays legible at ~60px.
+# - apple-touch-icon: transparent background, so iOS can theme it (dark,
+#   tinted and clear home-screen styles); iOS fills the transparent area
+#   with black in the default style, which keeps the white mark readable.
+# - Manifest "any"/"maskable" icons: opaque dark background, because Android
+#   launchers place non-themed icons on a light plate.
+# - Manifest "monochrome" icon: white on transparent, for platforms that tint.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
 SOURCE=app/assets/images/LogoLight.png
-BACKGROUND="#ffffff" # matches manifest background_color / theme_color
-INK="#101010"        # $dark in app/assets/stylesheets/variables.scss
+BACKGROUND="#101010" # $dark in app/assets/stylesheets/variables.scss
+INK="#ffffff"
 THICKEN=8            # dilation radius, in source pixels
 
-# render SIZE MARK_WIDTH OUTPUT
-render() {
+# opaque SIZE MARK_WIDTH OUTPUT
+opaque() {
   magick "$SOURCE" -alpha extract -trim +repage \
     -morphology Dilate "Disk:$THICKEN" \
     -resize "${2}x" \
@@ -23,10 +28,22 @@ render() {
     -alpha off -strip -define png:color-type=2 "$3"
 }
 
+# transparent SIZE MARK_WIDTH OUTPUT
+transparent() {
+  magick "$SOURCE" -alpha extract -trim +repage \
+    -morphology Dilate "Disk:$THICKEN" \
+    -resize "${2}x" \
+    -background black -gravity center -extent "${1}x${1}" \
+    -colorspace sRGB \( +clone -fill "$INK" -colorize 100 \) \
+    +swap -alpha off -compose CopyOpacity -composite \
+    -strip -define png:color-type=6 "$3"
+}
+
 # Regular icons: wordmark spans ~85% of the width.
-render 180 154 public/apple-touch-icon.png
-render 180 154 public/apple-touch-icon-precomposed.png
-render 192 164 public/icons/icon-192x192.png
-render 512 436 public/icons/icon-512x512.png
-# Maskable: keep the whole mark inside the 80% safe-zone circle.
-render 512 340 public/icons/icon-maskable-512x512.png
+transparent 180 154 public/apple-touch-icon.png
+transparent 180 154 public/apple-touch-icon-precomposed.png
+opaque 192 164 public/icons/icon-192x192.png
+opaque 512 436 public/icons/icon-512x512.png
+# Maskable and monochrome: keep the whole mark inside the 80% safe-zone circle.
+opaque 512 340 public/icons/icon-maskable-512x512.png
+transparent 512 340 public/icons/icon-monochrome-512x512.png
