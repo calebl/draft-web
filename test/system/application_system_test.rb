@@ -43,6 +43,10 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
       const composer = document.getElementById('composer');
       composer.focus({ preventScroll: true });
       composer.value = 'Here is some more text';
+      window.minimumScrollY = window.scrollY;
+      window.addEventListener('scroll', () => {
+        window.minimumScrollY = Math.min(window.minimumScrollY, window.scrollY);
+      });
     JS
     offset = evaluate_script('window.scrollY')
     assert_operator offset, :>, 0
@@ -52,5 +56,6 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
       assert_text 'Here is some more text'
     end
     assert_equal offset, evaluate_script('window.scrollY')
+    assert_equal offset, evaluate_script('window.minimumScrollY')
   end
 end
