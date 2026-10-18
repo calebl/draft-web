@@ -28,4 +28,29 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
       assert_text 'Here is some more text'
     end
   end
+
+  test 'Submitting text keeps the page scrolled where it was' do
+    visit edit_story_writing_session_path(stories(:one), writing_sessions(:one))
+
+    # Stand in for the iPhone keyboard, which scrolls the page to keep the composer
+    # visible: make the page taller than the window and scroll it down a little,
+    # keeping the composer on screen.
+    execute_script <<~JS
+      const style = document.createElement('style');
+      style.textContent = 'body::after { content: ""; display: block; height: 200vh; }';
+      document.head.appendChild(style);
+      window.scrollTo(0, 100);
+      const composer = document.getElementById('composer');
+      composer.focus({ preventScroll: true });
+      composer.value = 'Here is some more text';
+    JS
+    offset = evaluate_script('window.scrollY')
+    assert_operator offset, :>, 0
+
+    page.driver.browser.action.send_keys(:enter).perform
+    within '.text-container' do
+      assert_text 'Here is some more text'
+    end
+    assert_equal offset, evaluate_script('window.scrollY')
+  end
 end
