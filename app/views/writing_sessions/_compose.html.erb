@@ -1,3 +1,7 @@
+<% content_for :meta do %>
+  <%# Saving redirects back to this page; keep the scroll position instead of jumping to the top. %>
+  <meta name="turbo-refresh-scroll" content="preserve">
+<% end %>
 <div class="page" data-controller='compose'>
   <div class="header">
     <h3 class="title">Write</h3>
