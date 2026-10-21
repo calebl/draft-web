@@ -20,8 +20,8 @@ gem 'mail', '~> 2.7'
 gem 'redis', '~> 5.0'
 gem 'solid_queue', '~> 1.1'
 gem 'sprockets-rails'
-gem 'stimulus-rails', '~> 1.3'
 gem 'sqlite3'
+gem 'stimulus-rails', '~> 1.3'
 gem 'turbo-rails', '~> 1.5'
 
 # Use Active Storage variant
