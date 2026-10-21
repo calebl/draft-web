@@ -1,7 +1,7 @@
 class WritingSessionsController < ApplicationController
   protect_from_forgery with: :exception, if: proc { |c| c.request.format != 'application/json' }
   protect_from_forgery with: :null_session, if: proc { |c| c.request.format == 'application/json' }
-  after_action :touch_story, only: %i[create update move destroy]
+  after_action :touch_story, only: %i[create update destroy]
   layout 'home', only: %i[new edit]
 
   load_and_authorize_resource :story
@@ -78,6 +78,7 @@ class WritingSessionsController < ApplicationController
       redirect_to story_writing_session_path(@story, @writing_session), status: :see_other
     else
       @writing_session.update!(story: target_story)
+      @story.touch
       target_story.touch
       redirect_to story_writing_session_path(target_story, @writing_session),
                   notice: "Session moved to #{target_story.title}.",

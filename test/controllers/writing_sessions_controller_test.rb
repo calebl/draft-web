@@ -55,27 +55,42 @@ class WritingSessionsControllerTest < ActionDispatch::IntegrationTest
 
   test 'should move session to another story' do
     target = stories(:two)
+    source_updated_at = @story.updated_at
+    target_updated_at = target.updated_at
 
-    patch move_story_writing_session_url(@story, @writing_session), params: { target_story_id: target.id }
+    travel 1.second do
+      patch move_story_writing_session_url(@story, @writing_session), params: { target_story_id: target.id }
+    end
 
     assert_redirected_to story_writing_session_url(target, @writing_session)
     assert_equal target, @writing_session.reload.story
+    assert_operator @story.reload.updated_at, :>, source_updated_at
+    assert_operator target.reload.updated_at, :>, target_updated_at
     assert_equal 'Session moved to Second story.', flash[:notice]
   end
 
   test 'should not move session to a story belonging to another user' do
-    patch move_story_writing_session_url(@story, @writing_session), params: { target_story_id: stories(:three).id }
+    source_updated_at = @story.updated_at
+    other_story = stories(:three)
+    other_updated_at = other_story.updated_at
+
+    patch move_story_writing_session_url(@story, @writing_session), params: { target_story_id: other_story.id }
 
     assert_redirected_to story_writing_session_url(@story, @writing_session)
     assert_equal @story, @writing_session.reload.story
+    assert_equal source_updated_at, @story.reload.updated_at
+    assert_equal other_updated_at, other_story.reload.updated_at
     assert_not_nil flash[:alert]
   end
 
-  test 'should leave session in place when moved to its current story' do
+  test 'should leave session and story untouched when moved to its current story' do
+    source_updated_at = @story.updated_at
+
     patch move_story_writing_session_url(@story, @writing_session), params: { target_story_id: @story.id }
 
     assert_redirected_to story_writing_session_url(@story, @writing_session)
     assert_equal @story, @writing_session.reload.story
+    assert_equal source_updated_at, @story.reload.updated_at
     assert_nil flash[:notice]
   end
 
