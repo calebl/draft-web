@@ -5,7 +5,6 @@
     <%= link_to 'Back', story_writing_sessions_path(@story), class: 'header-action', data: { 'turbo-action': 'restore' } %>
   </div>
 <% end %>
-
 <%= render 'text', text: @writing_session.text %>
 <p>
   <strong>Word count:</strong>

@@ -31,3 +31,10 @@
 
 en:
   hello: "Hello world"
+  writing_sessions:
+    create:
+      success: "Session was successfully created."
+    destroy:
+      success: "Session was successfully destroyed."
+    move:
+      invalid_target: "Choose one of your stories to move this session to."
