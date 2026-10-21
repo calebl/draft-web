@@ -6,7 +6,9 @@ Rails.application.routes.draw do
   end
 
   resources :stories do
-    resources :writing_sessions
+    resources :writing_sessions do
+      patch :move, on: :member
+    end
     resource :outline, on: :member do
       resources :outline_items
     end
