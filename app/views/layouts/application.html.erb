@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
-
-<head>
+  <head>
     <title><%= @title || 'Draft' %></title>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -10,7 +9,6 @@
     <link rel="manifest" href="/manifest.json" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <%= yield :meta %>
-
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbo-track': 'reload' %>
     <script src="https://use.fontawesome.com/releases/v5.15.4/js/all.js" data-mutate-approach="sync"></script>
     <%= javascript_importmap_tags %>
@@ -19,21 +17,17 @@
         navigator.serviceWorker.register("/sw.js");
       }
     </script>
-</head>
-
-<body class="<%= controller.controller_name %> <%= controller.action_name %>" data-theme="<%= theme_preference %>">
+  </head>
+  <body class="<%= controller.controller_name %> <%= controller.action_name %>" data-theme="<%= theme_preference %>">
     <%= render "shared/theme" %>
     <%= render "shared/flash" %>
-
     <div class="page">
       <div class="header">
         <%= yield :header%>
       </div>
-
       <div class="container">
         <%= yield %>
       </div>
     </div>
-</body>
-
+  </body>
 </html>
