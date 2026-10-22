@@ -37,6 +37,9 @@
       .text-container {
         flex: 1;
         min-height: 0;
+        // A little breathing room under the header: half its height.
+        padding-top: ($header-height + $header-padding-top) / 2;
+        box-sizing: border-box;
 
         .text {
           max-height: none;

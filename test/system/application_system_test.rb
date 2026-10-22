@@ -75,6 +75,7 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
           const composer = document.getElementById('composer').getBoundingClientRect();
           return {
             headerBottom: header.bottom,
+            headerHeight: header.height,
             textTop: text.getBoundingClientRect().top,
             textBottom: text.getBoundingClientRect().bottom,
             composerTop: composer.top,
@@ -86,7 +87,9 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
         })()
       JS
 
-      assert_operator layout['textTop'] - layout['headerBottom'], :<=, 20, "#{width}px: text starts under the header"
+      # The text starts about half a header's height below the header.
+      gap = layout['textTop'] - layout['headerBottom']
+      assert_in_delta layout['headerHeight'] / 2, gap, 4, "#{width}px: text starts just under the header"
       assert_operator layout['textBottom'], :<=, layout['composerTop'], "#{width}px: text ends above the composer"
       assert_operator layout['composerBottom'], :<=, layout['viewportHeight'], "#{width}px: composer is on screen"
       assert layout['scrolls'], "#{width}px: long text scrolls"
