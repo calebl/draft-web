@@ -59,6 +59,43 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
     assert_equal offset, evaluate_script('window.minimumScrollY')
   end
 
+  test 'A long session fills the screen under the header and starts at the newest line' do
+    session = writing_sessions(:one)
+    session.update!(text: (1..80).map { |n| "<div>Sample line #{n} of placeholder text.</div>" }.join)
+
+    [[1280, 800], [390, 844]].each do |width, height|
+      page.driver.browser.manage.window.resize_to(width, height)
+      visit edit_story_writing_session_path(stories(:one), session)
+      assert_text 'Sample line 80'
+
+      layout = evaluate_script(<<~JS)
+        (() => {
+          const header = document.querySelector('.edit-page .header').getBoundingClientRect();
+          const text = document.querySelector('.edit-page .text');
+          const composer = document.getElementById('composer').getBoundingClientRect();
+          return {
+            headerBottom: header.bottom,
+            textTop: text.getBoundingClientRect().top,
+            textBottom: text.getBoundingClientRect().bottom,
+            composerTop: composer.top,
+            composerBottom: composer.bottom,
+            viewportHeight: window.innerHeight,
+            gapToBottom: text.scrollHeight - text.clientHeight - text.scrollTop,
+            scrolls: text.scrollHeight > text.clientHeight
+          };
+        })()
+      JS
+
+      assert_operator layout['textTop'] - layout['headerBottom'], :<=, 20, "#{width}px: text starts under the header"
+      assert_operator layout['textBottom'], :<=, layout['composerTop'], "#{width}px: text ends above the composer"
+      assert_operator layout['composerBottom'], :<=, layout['viewportHeight'], "#{width}px: composer is on screen"
+      assert layout['scrolls'], "#{width}px: long text scrolls"
+      assert_operator layout['gapToBottom'], :<=, 1, "#{width}px: text starts scrolled to the bottom"
+    end
+  ensure
+    page.driver.browser.manage.window.resize_to(1400, 1400)
+  end
+
   test 'Deleting a session refreshes the story counts and shows a notice' do
     visit story_path(stories(:one))
     assert_text 'Word Count Total: 100'
