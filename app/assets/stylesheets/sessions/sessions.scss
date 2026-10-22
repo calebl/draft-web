@@ -161,10 +161,11 @@
           padding: 1em;
 
           .text {
+            display: -webkit-box;
             overflow: hidden;
-            max-height: 50px;
-            mask-image: linear-gradient(to bottom, black 60%, transparent);
-            -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent);
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
           }
         }
 
