@@ -38,7 +38,7 @@ class WritingSessionsController < ApplicationController
       if @writing_session.save
         format.html do
           redirect_to edit_story_writing_session_path(@story, @writing_session.id),
-                      notice: 'Session was successfully created.',
+                      notice: I18n.t('writing_sessions.create.success'),
                       status: :see_other
         end
         format.json { render json: @writing_session, status: :ok }
@@ -66,12 +66,39 @@ class WritingSessionsController < ApplicationController
     end
   end
 
+  # PATCH /writing_sessions/1/move
+  def move
+    target_story = current_user.stories.find_by(id: params[:target_story_id])
+
+    if target_story.nil?
+      redirect_to story_writing_session_path(@story, @writing_session),
+                  alert: I18n.t('writing_sessions.move.invalid_target'),
+                  status: :see_other
+    elsif target_story == @story
+      redirect_to story_writing_session_path(@story, @writing_session), status: :see_other
+    else
+      @writing_session.update!(story: target_story)
+      # Moving a session intentionally marks both stories as recently updated.
+      # rubocop:disable Rails/SkipsModelValidations
+      @story.touch
+      target_story.touch
+      # rubocop:enable Rails/SkipsModelValidations
+      redirect_to story_writing_session_path(target_story, @writing_session),
+                  notice: "Session moved to #{target_story.title}.",
+                  status: :see_other
+    end
+  end
+
   # DELETE /writing_sessions/1
   # DELETE /writing_sessions/1.json
   def destroy
     @writing_session.destroy
     respond_to do |format|
-      format.html { redirect_to story_path(@story), notice: 'Session was successfully destroyed.', status: :see_other }
+      format.html do
+        redirect_to story_path(@story),
+                    notice: I18n.t('writing_sessions.destroy.success'),
+                    status: :see_other
+      end
       format.json { head :no_content }
     end
   end

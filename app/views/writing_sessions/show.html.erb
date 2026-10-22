@@ -5,9 +5,16 @@
     <%= link_to 'Back', story_writing_sessions_path(@story), class: 'header-action', data: { 'turbo-action': 'restore' } %>
   </div>
 <% end %>
-
 <%= render 'text', text: @writing_session.text %>
 <p>
   <strong>Word count:</strong>
   <%= @writing_session.word_count %>
 </p>
+<% other_stories = current_user.stories.where.not(id: @story.id).order(:title) %>
+<% if other_stories.any? %>
+  <%= form_with(url: move_story_writing_session_path(@story, @writing_session), method: :patch, class: 'move-session-form') do |form| %>
+    <%= form.label :target_story_id, 'Move to story' %>
+    <%= form.select :target_story_id, options_from_collection_for_select(other_stories, :id, :title) %>
+    <%= form.submit 'Move' %>
+  <% end %>
+<% end %>

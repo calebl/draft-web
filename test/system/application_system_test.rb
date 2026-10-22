@@ -29,6 +29,27 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
     end
   end
 
+  test 'Move a session to another story' do
+    visit story_path(stories(:one))
+    click_on 'Move'
+    select 'Second story', from: 'Move to story'
+    click_on 'Move'
+    assert_text 'Session moved to Second story.'
+    assert_current_path story_writing_session_path(stories(:two), writing_sessions(:one))
+
+    visit story_path(stories(:one))
+    assert_no_text 'MyText'
+  end
+
+  test 'Move form offers only the other stories of the same user' do
+    visit story_writing_session_path(stories(:one), writing_sessions(:one))
+    within '.move-session-form' do
+      assert_selector 'option', text: 'Second story'
+      assert_no_selector 'option', text: 'Story title'
+      assert_no_selector 'option', text: "Jane's Opus"
+    end
+  end
+
   test 'Submitting text keeps the page scrolled where it was' do
     visit edit_story_writing_session_path(stories(:one), writing_sessions(:one))
 

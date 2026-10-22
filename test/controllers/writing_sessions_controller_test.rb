@@ -53,6 +53,56 @@ class WritingSessionsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to story_url(@story)
   end
 
+  test 'should move session to another story' do
+    target = stories(:two)
+    source_updated_at = @story.updated_at
+    target_updated_at = target.updated_at
+
+    travel 1.second do
+      patch move_story_writing_session_url(@story, @writing_session), params: { target_story_id: target.id }
+    end
+
+    assert_redirected_to story_writing_session_url(target, @writing_session)
+    assert_equal target, @writing_session.reload.story
+    assert_operator @story.reload.updated_at, :>, source_updated_at
+    assert_operator target.reload.updated_at, :>, target_updated_at
+    assert_equal 'Session moved to Second story.', flash[:notice]
+  end
+
+  test 'should not move session to a story belonging to another user' do
+    source_updated_at = @story.updated_at
+    other_story = stories(:three)
+    other_updated_at = other_story.updated_at
+
+    patch move_story_writing_session_url(@story, @writing_session), params: { target_story_id: other_story.id }
+
+    assert_redirected_to story_writing_session_url(@story, @writing_session)
+    assert_equal @story, @writing_session.reload.story
+    assert_equal source_updated_at, @story.reload.updated_at
+    assert_equal other_updated_at, other_story.reload.updated_at
+    assert_not_nil flash[:alert]
+  end
+
+  test 'should leave session and story untouched when moved to its current story' do
+    source_updated_at = @story.updated_at
+
+    patch move_story_writing_session_url(@story, @writing_session), params: { target_story_id: @story.id }
+
+    assert_redirected_to story_writing_session_url(@story, @writing_session)
+    assert_equal @story, @writing_session.reload.story
+    assert_equal source_updated_at, @story.reload.updated_at
+    assert_nil flash[:notice]
+  end
+
+  test 'should not allow other users to move a session' do
+    act_as users(:jane)
+
+    patch move_story_writing_session_url(@story, @writing_session), params: { target_story_id: stories(:three).id }
+
+    assert_redirected_to root_path
+    assert_equal @story, @writing_session.reload.story
+  end
+
   test 'should protect viewing writing sessions from other users' do
     act_as users(:jane)
 
