@@ -5,7 +5,6 @@
     <%= link_to 'Back', story_writing_sessions_path(@story), class: 'header-action', data: { 'turbo-action': 'restore' } %>
   </div>
 <% end %>
-
 <p class="session-meta">
   <%= @writing_session.created_at.strftime('%B %-d, %Y') %> · <%= pluralize(@writing_session.word_count || 0, 'word') %>
 </p>
