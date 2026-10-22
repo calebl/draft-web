@@ -12,7 +12,7 @@ export default class extends Controller {
   }
 
   end(event) {
-    let id = event.item.dataset.id || event.item.firstElementChild.dataset.id
+    let id = event.item.dataset.id
     let data = new FormData()
     data.append('outline_item[position]', event.newIndex + 1)
 

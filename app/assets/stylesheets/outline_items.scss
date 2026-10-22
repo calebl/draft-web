@@ -11,10 +11,15 @@
     justify-content: flex-start;
     align-items: flex-start;
 
+    input[type=checkbox] {
+      margin: 2px 0 0;
+    }
+
     textarea {
-      margin: 0 16px;
-      overflow: auto;
+      margin: 0 8px;
+      overflow: hidden;
       flex: 1;
+      line-height: 1.4;
     }
   }
 }

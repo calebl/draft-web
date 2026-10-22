@@ -3,27 +3,40 @@
 // You can use Sass (SCSS) here: https://sass-lang.com/
 
 .outlines {
+  .outline-header,
   .outline-items {
-    max-height: 90vh;
-    overflow: auto;
+    width: 100%;
     max-width: 600px;
-    width: 80vw;
-    margin-top: 32px;
+  }
+
+  .outline-header h4 {
+    margin: 0 0 12px;
+  }
+
+  .outline-items {
+    margin-top: 24px;
+
+    ol {
+      padding-left: 0;
+      list-style: none;
+    }
 
     li {
       display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 8px 0;
+
       .handle {
         flex: 0;
         cursor: grab;
+        opacity: 0.4;
+        margin-top: 4px;
       }
-      padding-right: 32px;
     }
 
     .outline-item {
       flex: 1;
-      margin-bottom: 16px;
     }
   }
-
 }
-
