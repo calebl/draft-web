@@ -1,7 +1,6 @@
 <% content_for :meta do %>
   <meta name="turbo-cache-control" content="no-cache">
 <% end %>
-
 <% content_for :header do %>
   <h3></h3>
   <div class="header-actions">
@@ -35,5 +34,5 @@
   <div>
     <h4>Previous Sessions</h4>
     <%= render partial: 'writing_sessions/writing_sessions', locals: { story: @story, writing_sessions: @writing_sessions, show_one: true } %>
-  <div>
+  </div>
 </div>
