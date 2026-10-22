@@ -23,14 +23,7 @@
 
 <body class="<%= controller.controller_name %> <%= controller.action_name %>" data-theme="<%= theme_preference %>">
     <%= render "shared/theme" %>
-    <% unless flash.empty? %>
-      <script type="text/javascript">
-        <% flash.each do |f| %>
-          <% type = f[0].to_s.gsub('alert', 'error').gsub('notice', 'info') %>
-          toastr['<%= type %>']('<%= f[1] %>');
-        <% end %>
-      </script>
-    <% end %>
+    <%= render "shared/flash" %>
 
     <%= yield %>
 </body>

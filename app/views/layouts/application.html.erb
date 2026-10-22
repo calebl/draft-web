@@ -23,17 +23,7 @@
 
 <body class="<%= controller.controller_name %> <%= controller.action_name %>" data-theme="<%= theme_preference %>">
     <%= render "shared/theme" %>
-    <% unless flash.empty? %>
-      <script type="text/javascript" data-turbo-cache="false">
-        toastr.options.preventDuplicates = true;
-        toastr.options.closeMethod = 'fadeOut';
-
-        <% flash.each do |f| %>
-          <% type = f[0].to_s.gsub('alert', 'error').gsub('notice', 'info') %>
-          toastr['<%= type %>']('<%= f[1] %>', {timeOut: 3});
-        <% end %>
-      </script>
-    <% end %>
+    <%= render "shared/flash" %>
 
     <div class="page">
       <div class="header">

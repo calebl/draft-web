@@ -27,7 +27,7 @@
       <% if @next_outline_item %>
         <%= render partial: 'outline_items/outline_item', locals: {story: @story, item: @next_outline_item}%>
       <% else %>
-        <div>No more items to complete!</div>
+        <p class="empty-state">No outline items left.</p>
       <% end %>
     </turbo-frame>
   </div>
