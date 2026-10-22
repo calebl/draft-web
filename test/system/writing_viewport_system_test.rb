@@ -61,7 +61,11 @@ class WritingViewportSystemTest < ActionDispatch::SystemTestCase
     assert_operator gap_to_bottom, :<=, 1
 
     page.driver.browser.manage.window.resize_to(390, 844)
-    execute_script("document.querySelector('.edit-page .text').scrollTop = 0")
+    execute_script(<<~JS)
+      const text = document.querySelector('.edit-page .text');
+      text.scrollTop = 0;
+      text.dispatchEvent(new Event('scroll'));
+    JS
     assert_equal 0, evaluate_script("document.querySelector('.edit-page .text').scrollTop")
     page.driver.browser.manage.window.resize_to(390, 500)
     assert_equal 0, evaluate_script("document.querySelector('.edit-page .text').scrollTop")
