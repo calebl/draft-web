@@ -1,7 +1,7 @@
 <dd class="session" id="<%= dom_id writing_session %>">
   <div class="content">
     <div class="text-column"><%= render partial: 'writing_sessions/text', locals: {text: writing_session.text} %></div>
-    <div class="word-count"><%= writing_session.word_count %></div>
+    <div class="word-count"><%= writing_session.created_at.strftime('%b %-d') %> · <%= pluralize(writing_session.word_count || 0, 'word') %></div>
   </div>
   <div class="actions">
     <%= link_to 'Resume', edit_story_writing_session_path(writing_session.story_id, writing_session), class: 'action-link', data: {"turbo-frame": "_top"} %>

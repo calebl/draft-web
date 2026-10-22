@@ -9,7 +9,7 @@
       position: absolute;
       bottom: 5px;
       right: 5px;
-      color: lightgray;
+      color: gray;
       font-size: 14px;
       padding-left: 30px;
 
@@ -23,8 +23,8 @@
 
       @media screen and (max-width: $mobile) {
         position: fixed;
-        bottom: 100px;
-        top: 40px;
+        bottom: 120px;
+        top: 48px;
 
         .text {
           max-height: inherit;
@@ -46,6 +46,16 @@
         bottom: 0;
         right: 0;
         left: 0;
+
+        .compose-container {
+          padding: 0 10px 10px;
+          box-sizing: border-box;
+        }
+
+        .word-count {
+          bottom: 16px;
+          right: 18px;
+        }
       }
 
       .compose-container {
