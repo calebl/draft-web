@@ -1,9 +1,14 @@
 @import '../variables';
 @import '../mixins';
 
+// The writing screen reads like a chat: the header on top, the composer pinned to the
+// bottom, and the text filling everything in between, scrolled to the newest line.
 .edit-page, .new-page {
   .container {
     @include container;
+    flex: 1;
+    min-height: 0;
+    justify-content: flex-start;
 
     .word-count {
       position: absolute;
@@ -18,43 +23,29 @@
       }
     }
 
-    .text-container {
-      flex: 0.7;
-
-      @media screen and (max-width: $mobile) {
-        position: fixed;
-        bottom: 120px;
-        top: 48px;
-
-        .text {
-          max-height: inherit;
-        }
-      }
-
-      .text {
-        padding: 0 16px;
-      }
-    }
-
     .compose {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
       width: 100%;
       max-width: 600px;
+      padding-bottom: 10px;
+      box-sizing: border-box;
 
+      .text-container {
+        flex: 1;
+        min-height: 0;
+        // A little breathing room under the header: half its height.
+        padding-top: ($header-height + $header-padding-top) / 2;
+        box-sizing: border-box;
 
-      @media screen and (max-width: $mobile) {
-        position: fixed;
-        bottom: 0;
-        right: 0;
-        left: 0;
-
-        .compose-container {
-          padding: 0 10px 10px;
+        .text {
+          max-height: none;
+          min-height: 0;
+          padding: 0 16px;
           box-sizing: border-box;
-        }
-
-        .word-count {
-          bottom: 16px;
-          right: 18px;
         }
       }
 
@@ -72,8 +63,11 @@
           @include compose-form;
         }
       }
+
+      .word-count {
+        bottom: 16px;
+        right: 8px;
+      }
     }
   }
-
-
 }
