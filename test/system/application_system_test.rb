@@ -99,6 +99,30 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
     page.driver.browser.manage.window.resize_to(1400, 1400)
   end
 
+  test 'A viewport resize keeps a long session anchored to the newest line' do
+    session = writing_sessions(:one)
+    session.update!(text: (1..80).map { |n| "<div>Sample line #{n} of placeholder text.</div>" }.join)
+
+    page.driver.browser.manage.window.resize_to(390, 844)
+    visit edit_story_writing_session_path(stories(:one), session)
+    assert_text 'Sample line 80'
+    assert_operator evaluate_script("document.querySelector('.edit-page .text').scrollHeight - document.querySelector('.edit-page .text').clientHeight - document.querySelector('.edit-page .text').scrollTop"), :<=, 1
+
+    find('#composer').click
+    page.driver.browser.manage.window.resize_to(390, 500)
+
+    gap_to_bottom = evaluate_script("document.querySelector('.edit-page .text').scrollHeight - document.querySelector('.edit-page .text').clientHeight - document.querySelector('.edit-page .text').scrollTop")
+    assert_operator gap_to_bottom, :<=, 1
+
+    page.driver.browser.manage.window.resize_to(390, 844)
+    execute_script("document.querySelector('.edit-page .text').scrollTop = 0")
+    assert_equal 0, evaluate_script("document.querySelector('.edit-page .text').scrollTop")
+    page.driver.browser.manage.window.resize_to(390, 500)
+    assert_equal 0, evaluate_script("document.querySelector('.edit-page .text').scrollTop")
+  ensure
+    page.driver.browser.manage.window.resize_to(1400, 1400)
+  end
+
   test 'Deleting a session refreshes the story counts and shows a notice' do
     visit story_path(stories(:one))
     assert_text 'Word Count Total: 100'
