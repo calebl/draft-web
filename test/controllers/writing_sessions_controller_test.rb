@@ -53,6 +53,14 @@ class WritingSessionsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to story_url(@story)
   end
 
+  test 'shows the destroy notice as a note, not a script' do
+    delete story_writing_session_url(@story, @writing_session)
+    follow_redirect!
+
+    assert_select '.flash[role=status]', text: 'Session was successfully destroyed.'
+    assert_select 'script', text: /toastr/, count: 0
+  end
+
   test 'should protect viewing writing sessions from other users' do
     act_as users(:jane)
 

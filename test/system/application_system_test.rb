@@ -59,6 +59,19 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
     assert_equal offset, evaluate_script('window.minimumScrollY')
   end
 
+  test 'Deleting a session refreshes the story counts and shows a notice' do
+    visit story_path(stories(:one))
+    assert_text 'Word Count Total: 100'
+    assert_text 'Writing Sessions: 1'
+
+    accept_confirm { click_on 'Delete' }
+
+    assert_selector '.flash', text: 'Session was successfully destroyed.'
+    assert_text 'Word Count Total: 0'
+    assert_text 'Writing Sessions: 0'
+    assert_selector '.empty-state', text: 'Nothing yet.'
+  end
+
   test 'Stories list fits a phone screen' do
     stories(:one).update!(title: 'A Very Long Story Title That Keeps Going Past The Edge Of A Phone Screen')
     page.driver.browser.manage.window.resize_to(390, 844)

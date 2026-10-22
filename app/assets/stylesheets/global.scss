@@ -199,6 +199,62 @@ textarea {
   display: none;
 }
 
+// A short-lived note under the header after a redirect, e.g. "Session was successfully destroyed.".
+.flash {
+  position: fixed;
+  top: 48px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  width: max-content;
+  max-width: calc(100% - 40px);
+  box-sizing: border-box;
+  padding: 8px 16px;
+  border-radius: $border-radius;
+  background: $dark;
+  color: $white;
+  font-size: 14px;
+  pointer-events: none;
+  animation: flash-fade 4s ease forwards;
+
+  [data-theme="dark"] & {
+    background: $light;
+    color: $dark;
+  }
+}
+
+@keyframes flash-fade {
+  0%, 80% { opacity: 1; }
+  100% { opacity: 0; visibility: hidden; }
+}
+
+// Rails wraps invalid fields in this div; let the field keep its own layout.
+.field_with_errors {
+  display: contents;
+}
+
+.empty-state {
+  color: gray;
+  margin: 0;
+}
+
+#error_explanation {
+  flex-basis: 100%;
+  border-left: 2px solid currentColor;
+  padding: 4px 12px;
+  margin-bottom: 8px;
+
+  h2 {
+    font-size: 14px;
+    margin: 0 0 4px;
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 16px;
+  }
+}
+
 body[data-theme="dark"] {
   background: $dark;
   color: $light;
