@@ -5,20 +5,11 @@
   </div>
 <% end %>
 <turbo-frame id="new_story_form">
-  <%= form_with(model: @story, class: 'story-form') do |form| %>
-    <% if @story.errors.any? %>
-      <div id="error_explanation">
-        <h2><%= pluralize(@story.errors.count, "error") %> prohibited this story from being saved:</h2>
-        <ul>
-          <% @story.errors.full_messages.each do |message| %>
-            <li><%= message %></li>
-          <% end %>
-        </ul>
-      </div>
-    <% end %>
+  <%= form_with(model: @story, class: 'story-form simple-form') do |form| %>
+    <%= render "shared/form_errors", model: @story %>
     <%= form.label :title %>
     <%= form.text_field :title, value: '', placeholder: 'Enter title' %>
     <%= form.submit "Create Story", data: { turbo_frame: '_top'} %>
-    <a href="<%= stories_path %>">cancel</a>
+    <a href="<%= stories_path %>" class="cancel-link">Cancel</a>
   <% end %>
 </turbo-frame>

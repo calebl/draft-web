@@ -58,4 +58,26 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
     assert_equal offset, evaluate_script('window.scrollY')
     assert_equal offset, evaluate_script('window.minimumScrollY')
   end
+
+  test 'Stories list fits a phone screen' do
+    stories(:one).update!(title: 'A Very Long Story Title That Keeps Going Past The Edge Of A Phone Screen')
+    page.driver.browser.manage.window.resize_to(390, 844)
+    visit stories_path
+    assert_text 'Add a New Story'
+
+    viewport_width = evaluate_script('document.documentElement.clientWidth')
+    assert_operator evaluate_script('document.documentElement.scrollWidth'), :<=, viewport_width
+
+    # Every row's actions, Delete included, sit inside the screen.
+    rights = evaluate_script(<<~JS)
+      [...document.querySelectorAll('.stories-grid .story-actions a')].map((a) => a.getBoundingClientRect().right)
+    JS
+    assert_not_empty rights
+    rights.each { |right| assert_operator right, :<=, viewport_width }
+
+    # The header button is not cut off at the top of the page.
+    assert_operator evaluate_script("document.querySelector('.header-action').getBoundingClientRect().top"), :>=, 0
+  ensure
+    page.driver.browser.manage.window.resize_to(1400, 1400)
+  end
 end

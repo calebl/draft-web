@@ -7,6 +7,10 @@
 
 .stories {
   &.index {
+    #new_story_form {
+      margin-bottom: 16px;
+    }
+
     .stories-grid {
       display: flex;
       flex-direction: column;
@@ -19,26 +23,37 @@
 
       .story {
         display: flex;
+        flex-wrap: wrap;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 16px;
-        transition: all 0.5rs;
+        gap: 4px 16px;
+        padding: 12px 0;
+        border-bottom: 1px solid $border-color-light;
+
+        [data-theme="dark"] & {
+          border-bottom-color: $border-color-dark;
+        }
 
         h3 {
-          margin-right: 16px;
-          white-space: nowrap;
+          margin: 0;
+          flex: 1 1 240px;
+          min-width: 0;
+          overflow-wrap: anywhere;
         }
-        
+
         .story-actions {
-          flex: 1 0 content;
           display: flex;
-          justify-content: flex-end;
+          gap: 4px;
+          margin-left: -12px;
 
           a {
-            padding: 8px 16px;
+            padding: 8px 12px;
             border: none;
-            margin-right: 8px;
             white-space: nowrap;
+
+            &:last-child {
+              opacity: 0.6;
+            }
           }
         }
       }
@@ -56,18 +71,20 @@
     .top {
       display: flex;
       flex-direction: column;
-      align-items: center;
+      align-items: stretch;
       margin-bottom: 16px;
       width: 100%;
 
       @include breakpoint(tablet) {
         justify-content: space-between;
+        align-items: center;
         flex-direction: row;
       }
 
       .primary-link {
         padding: 8px 18px;
-        margin-top: 32px;
+        margin-top: 16px;
+        text-align: center;
 
         @include breakpoint(tablet) {
           margin-top: 8px;
@@ -78,6 +95,7 @@
       justify-content: flex-start;
       align-items: center;
       width: 100%;
+      box-sizing: border-box;
       padding: 0 16px;
 
       @include breakpoint(tablet) {
@@ -91,6 +109,18 @@
         max-width: 1200px;
       }
     }
+    .stats {
+      h3 {
+        margin: 8px 0;
+        overflow-wrap: anywhere;
+      }
+
+      > div {
+        color: gray;
+        line-height: 1.5;
+      }
+    }
+
     .story-details {
       display: block;
       width: 100%;
