@@ -73,8 +73,10 @@ class WritingViewportSystemTest < ActionDispatch::SystemTestCase
 
   def gap_to_bottom
     evaluate_script(<<~JS)
-      const text = document.querySelector('.edit-page .text');
-      text.scrollHeight - text.clientHeight - text.scrollTop;
+      (() => {
+        const text = document.querySelector('.edit-page .text');
+        return text.scrollHeight - text.clientHeight - text.scrollTop;
+      })()
     JS
   end
 end
