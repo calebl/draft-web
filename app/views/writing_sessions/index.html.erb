@@ -4,5 +4,4 @@
     <%= link_to 'Back', @story, class: 'header-action', data: {'turbo-action': 'restore'} %>
   </div>
 <% end %>
-
 <%= render partial: 'writing_sessions', locals: { story: @story, writing_sessions: @writing_sessions } %>
