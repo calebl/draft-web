@@ -22,7 +22,8 @@ export default class extends Controller {
       method: 'PATCH',
       body: data,
       headers: {
-        'Accept': 'text/vnd.turbo-stream.html'
+        'Accept': 'text/vnd.turbo-stream.html',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
       }
     })
   }

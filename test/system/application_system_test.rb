@@ -96,6 +96,23 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
     assert_operator evaluate_script("document.querySelector(#{selector.to_json}).offsetHeight"), :>, one_line_height
   end
 
+  test 'Dragging an outline item persists its new position' do
+    story = stories(:one)
+    dragged_id = outline_items(:three).id.to_s
+    original_forgery_protection = ActionController::Base.allow_forgery_protection
+    ActionController::Base.allow_forgery_protection = true
+    visit story_outline_path(story)
+
+    items = all('#outline-items li')
+    items.last.find('.handle').drag_to(items.first)
+    assert_equal dragged_id, first('#outline-items li')['data-id']
+
+    visit story_outline_path(story)
+    assert_equal dragged_id, first('#outline-items li')['data-id']
+  ensure
+    ActionController::Base.allow_forgery_protection = original_forgery_protection
+  end
+
   test 'Stories list fits a phone screen' do
     stories(:one).update!(title: 'A Very Long Story Title That Keeps Going Past The Edge Of A Phone Screen')
     page.driver.browser.manage.window.resize_to(390, 844)

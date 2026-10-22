@@ -27,7 +27,7 @@ class OutlineItemsController < ApplicationController
   def update
     redirect_to_home unless can? :update, @story
 
-    if item_params[:text].to_s.empty?
+    if item_params.key?(:text) && item_params[:text].empty?
       @outline_item.destroy
     else
       @outline_item.set_list_position(item_params[:position]) if item_params[:position]
