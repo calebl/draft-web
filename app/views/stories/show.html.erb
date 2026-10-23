@@ -4,6 +4,7 @@
 <% content_for :header do %>
   <h3></h3>
   <div class="header-actions">
+    <%= render 'shared/feedback' %>
     <%= link_to "Outline", story_outline_path(@story), class: 'header-action', data: {'turbo-action': 'advance'} %>
     <%= link_to 'All Stories', stories_path, class: 'header-action', data: {'turbo-action': 'restore'} %>
   </div>

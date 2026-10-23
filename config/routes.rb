@@ -5,6 +5,8 @@ Rails.application.routes.draw do
     resource :theme, only: [:update]
   end
 
+  resource :feedback, only: :create, controller: 'feedback'
+
   resources :stories do
     resources :writing_sessions
     resource :outline, on: :member do

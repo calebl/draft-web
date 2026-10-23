@@ -1,6 +1,7 @@
 <% content_for :header do%>
   <h3 class="title">New Story</h3>
   <div class="header-actions">
+    <%= render 'shared/feedback' %>
     <%= link_to 'Back', stories_path, class: 'header-action', data: {'turbo-action': 'restore'} %>
   </div>
 <% end %>

@@ -1,0 +1,19 @@
+<% if feedback_enabled? %>
+  <div id="feedback" class="feedback" data-controller="feedback">
+    <button type="button" class="header-action feedback-toggle" title="Send feedback" aria-label="Send feedback" data-action="feedback#open">
+      <i class="fas fa-comment-alt"></i>
+    </button>
+    <dialog class="feedback-dialog" data-feedback-target="dialog" aria-label="Send feedback">
+      <%= form_with url: feedback_path, class: 'feedback-form' do |form| %>
+        <%= form.hidden_field :screen, value: local_assigns[:screen] || "#{controller_path}##{action_name}", id: nil %>
+        <%= form.hidden_field :request_id, value: SecureRandom.uuid, id: nil %>
+        <%= form.text_area :text, rows: 5, maxlength: FeedbackController::MAX_LENGTH, required: true, id: 'feedback_text',
+                                  placeholder: 'What would make Draft better?', 'aria-label': 'Feedback' %>
+        <div class="feedback-buttons">
+          <button type="button" class="header-action" data-action="feedback#close">Cancel</button>
+          <%= form.submit 'Send', class: 'header-action' %>
+        </div>
+      <% end %>
+    </dialog>
+  </div>
+<% end %>

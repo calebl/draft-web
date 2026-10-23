@@ -195,6 +195,53 @@ textarea {
   }
 }
 
+// The header's feedback icon and the small dialog it opens.
+.feedback {
+  display: contents;
+}
+
+.page .header .feedback-toggle {
+  border-color: transparent;
+}
+
+.feedback-dialog {
+  width: calc(100% - 40px);
+  max-width: 400px;
+  box-sizing: border-box;
+  padding: 16px;
+  text-align: left;
+  user-select: text;
+  color: $dark;
+  background: $white;
+  border: 1px solid gray;
+  border-radius: $border-radius;
+
+  [data-theme="dark"] & {
+    color: $light;
+    background: $dark;
+  }
+
+  &::backdrop {
+    background: rgba(0, 0, 0, 0.3);
+  }
+
+  textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px;
+    border: 1px solid gray;
+    border-radius: $border-radius;
+    font-size: 16px;
+  }
+
+  .feedback-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+    margin-top: 12px;
+  }
+}
+
 .hidden, .hide {
   display: none;
 }
