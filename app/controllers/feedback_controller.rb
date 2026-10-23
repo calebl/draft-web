@@ -51,7 +51,7 @@ class FeedbackController < ApplicationController
   end
 
   def accept
-    flash.now[:notice] = 'Sent'
+    flash.now[:notice] = I18n.t('feedback.sent')
     render turbo_stream: [
       turbo_stream.replace('feedback', partial: 'shared/feedback', locals: { screen: params[:screen] }),
       turbo_stream.append_all('body', partial: 'shared/flash')
@@ -60,7 +60,7 @@ class FeedbackController < ApplicationController
 
   # Leaves the form as it is so the typed text survives.
   def reject
-    flash.now[:error] = "Couldn't send"
+    flash.now[:error] = I18n.t('feedback.send_failed')
     render turbo_stream: turbo_stream.append_all('body', partial: 'shared/flash'), status: :unprocessable_entity
   end
 end

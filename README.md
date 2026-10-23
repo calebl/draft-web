@@ -85,11 +85,12 @@ In production, set `RAILS_ALLOWED_HOSTS` to a comma-separated list of host names
 addresses (for example `myhost.example.ts.net,100.64.0.1`) to reject requests for any
 other `Host`. When it is unset, every host is accepted.
 
-### Feedback
+## Feedback
 
-Set `DRAFT_FEEDBACK_COMMAND` to a command (split like a shell word list, but run without a
-shell) to show a feedback button in the page header. Sending runs the command with
-`--request-id draft-feedback-<uuid> --json -` appended and the message on stdin: a
-`Draft feedback (screen: controller#action)` line, a blank line, then the typed text. Exit
-status 0 or 3 counts as sent. When it is unset, the button is hidden and the endpoint
-returns 404.
+Set `DRAFT_FEEDBACK_COMMAND` in the server environment to a command (split like a shell
+word list, but run without a shell) to show a feedback button in the page header. Sending
+runs the command with `--request-id draft-feedback-<uuid> --json -` appended and the
+message on stdin: a `Draft feedback (screen: controller#action)` line, a blank line, then
+the typed text. Exit status 0 or 3 counts as sent. Feedback is limited to 2,000 characters
+and five submissions per minute. When the variable is unset, the button is hidden and the
+endpoint returns 404.
