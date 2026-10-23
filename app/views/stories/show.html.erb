@@ -22,16 +22,16 @@
 </div>
 <div class="story-details">
   <% if @story.outline_items.exists? %>
-  <div>
-    <h4>Next Outline Item</h4>
-    <turbo-frame id="next-outline-item">
-      <% if @next_outline_item %>
-        <%= render partial: 'outline_items/outline_item', locals: {story: @story, item: @next_outline_item}%>
-      <% else %>
-        <p class="empty-state">No outline items left.</p>
-      <% end %>
-    </turbo-frame>
-  </div>
+    <div>
+      <h4>Next Outline Item</h4>
+      <turbo-frame id="next-outline-item">
+        <% if @next_outline_item %>
+          <%= render partial: 'outline_items/outline_item', locals: {story: @story, item: @next_outline_item}%>
+        <% else %>
+          <p class="empty-state">No outline items left.</p>
+        <% end %>
+      </turbo-frame>
+    </div>
   <% end %>
   <div>
     <h4>Previous Sessions</h4>
