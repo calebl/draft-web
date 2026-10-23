@@ -21,6 +21,7 @@
   <%= link_to 'New Session', new_story_writing_session_path(@story), class: 'primary-link button-link' %>
 </div>
 <div class="story-details">
+  <% if @story.outline_items.exists? %>
   <div>
     <h4>Next Outline Item</h4>
     <turbo-frame id="next-outline-item">
@@ -31,6 +32,7 @@
       <% end %>
     </turbo-frame>
   </div>
+  <% end %>
   <div>
     <h4>Previous Sessions</h4>
     <%= render partial: 'writing_sessions/writing_sessions', locals: { story: @story, writing_sessions: @writing_sessions, show_one: true } %>
