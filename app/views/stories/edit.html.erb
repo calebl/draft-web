@@ -1,7 +1,7 @@
 <% content_for :header do %>
   <h3 class="title">Edit Story Details</h3>
   <div class="header-actions">
-    <%= render 'shared/feedback' %>
+    <%= pocket_kit_feedback %>
     <%= link_to 'View Story', story_path(@story), class: 'header-action', data: {'turbo-action': 'restore'} %>
   </div>
 <% end %>

@@ -87,13 +87,14 @@ other `Host`. When it is unset, every host is accepted.
 
 ## Feedback
 
-Set `DRAFT_FEEDBACK_COMMAND` in the server environment to a command (split like a shell
-word list, but run without a shell) to show a feedback button in the page header. Sending
-runs the command with `--request-id draft-feedback-<uuid> --json -` appended and the
-message on stdin: a `Draft feedback (screen: controller#action)` line, then
-`Device:` and `Viewport:` lines describing the browser (user agent, window and visible
-size, pixel ratio, standalone mode) when it reported them, a blank line, then the typed
-text. Exit status 0 or 3 counts as sent. Feedback is limited to 2,000 characters and five
+The feedback button comes from the [pocket-kit](https://github.com/calebl/pocket-kit) gem,
+configured in `config/initializers/pocket_kit.rb`. Set `DRAFT_FEEDBACK_COMMAND` in the server
+environment to a command (split like a shell word list, but run without a shell) to show a
+feedback button in the page header. Sending runs the command with
+`--request-id draft-feedback-<uuid> --json -` appended and the message on stdin: a
+`Draft feedback (screen: controller#action)` line, a blank line, the typed text, then a
+`Device:` block describing the browser (user agent, screen, window and visible size, pixel
+ratio, home screen app, color scheme) when it reported them. Exit status 0 or 3 counts as sent. Feedback is limited to 2,000 characters and five
 submissions per minute. When the variable is unset, the button is hidden and the endpoint
 returns 404.
 

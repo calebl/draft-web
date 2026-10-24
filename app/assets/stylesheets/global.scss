@@ -195,51 +195,36 @@ textarea {
   }
 }
 
-// The header's feedback icon and the small dialog it opens.
-.feedback {
-  display: contents;
-}
-
-.page .header .feedback-toggle {
-  border-color: transparent;
-}
-
-.feedback-dialog {
-  width: calc(100% - 40px);
-  max-width: 400px;
-  box-sizing: border-box;
-  padding: 16px;
-  text-align: left;
-  user-select: text;
-  color: $dark;
-  background: $white;
-  border: 1px solid gray;
-  border-radius: $border-radius;
+// The header's feedback button (pocket-kit), drawn like the other header actions.
+.pk-feedback {
+  --pk-feedback-color: #{$dark};
+  --pk-feedback-background: #{$white};
+  --pk-feedback-border: gray;
+  --pk-feedback-radius: #{$border-radius};
+  --pk-feedback-backdrop: rgba(0, 0, 0, 0.3);
 
   [data-theme="dark"] & {
-    color: $light;
-    background: $dark;
+    --pk-feedback-color: #{$light};
+    --pk-feedback-background: #{$dark};
   }
+}
 
-  &::backdrop {
-    background: rgba(0, 0, 0, 0.3);
-  }
+.page .header .pk-feedback-toggle {
+  min-height: 30px;
+  padding: 0 10px;
+  color: gray;
+  border-color: transparent;
+  border-radius: 5px;
 
-  textarea {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 8px;
-    border: 1px solid gray;
-    border-radius: $border-radius;
-    font-size: 16px;
+  &:hover {
+    color: black;
+    background: lightgray;
   }
+}
 
-  .feedback-buttons {
-    display: flex;
-    justify-content: flex-end;
-    gap: 6px;
-    margin-top: 12px;
-  }
+.pk-feedback-dialog {
+  max-width: 400px;
+  user-select: text;
 }
 
 .hidden, .hide {

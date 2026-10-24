@@ -5,7 +5,7 @@ Rails.application.routes.draw do
     resource :theme, only: [:update]
   end
 
-  resource :feedback, only: :create, controller: 'feedback'
+  mount PocketKit::Engine, at: '/'
 
   resources :stories do
     resources :writing_sessions
