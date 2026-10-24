@@ -3,7 +3,21 @@
 
 // The writing screen reads like a chat: the header on top, the composer pinned to the
 // bottom, and the text filling everything in between, scrolled to the newest line.
+// The document itself never scrolls here, so the keyboard cannot push the header away.
+html:has(.edit-page, .new-page), html:has(.edit-page, .new-page) body {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
 .edit-page, .new-page {
+  // Sized to the visible area (set by the compose controller), which shrinks while the
+  // on-screen keyboard is open.
+  > .page {
+    top: var(--visible-top, 0);
+    bottom: auto;
+    height: var(--visible-height, 100%);
+  }
+
   .container {
     @include container;
     flex: 1;
