@@ -7,13 +7,16 @@ export default class extends Controller {
     connect() {
         this.handleScroll = this.handleScroll.bind(this);
         this.handleViewportResize = this.handleViewportResize.bind(this);
+        // Size to the visible area before scrolling: after saving, the page comes back while
+        // the keyboard is still open, and scrolling first would leave the newest line hidden
+        // below the shrunken text.
+        this.fitToVisibleViewport();
         this.scrollToBottom();
         this.isAtBottom = true;
         this.textViewTarget.addEventListener("scroll", this.handleScroll);
         window.addEventListener("resize", this.handleViewportResize);
         window.visualViewport?.addEventListener("resize", this.handleViewportResize);
         window.visualViewport?.addEventListener("scroll", this.handleViewportResize);
-        this.fitToVisibleViewport();
     }
 
     disconnect() {
