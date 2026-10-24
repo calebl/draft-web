@@ -4,7 +4,10 @@
       <i class="fas fa-comment-alt"></i>
     </button>
     <dialog class="feedback-dialog" data-feedback-target="dialog" aria-label="Send feedback">
-      <%= form_with url: feedback_path, class: 'feedback-form' do |form| %>
+      <%= form_with url: feedback_path, class: 'feedback-form', data: { action: 'submit->feedback#describeDevice' } do |form| %>
+        <% %w[user_agent width height visible_width visible_height pixel_ratio standalone].each do |field| %>
+          <%= hidden_field_tag "device[#{field}]", nil, id: nil, data: { feedback_target: 'device', field: field } %>
+        <% end %>
         <%= form.hidden_field :screen, value: local_assigns[:screen] || "#{controller_path}##{action_name}", id: nil %>
         <%= form.hidden_field :request_id, value: SecureRandom.uuid, id: nil %>
         <%= form.text_area :text, rows: 5, maxlength: FeedbackController::MAX_LENGTH, required: true, id: 'feedback_text',

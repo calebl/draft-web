@@ -7,6 +7,9 @@ class FeedbackController < ApplicationController
   MAX_LENGTH = 2000
   UUID_FORMAT = /\A\h{8}-\h{4}-\h{4}-\h{4}-\h{12}\z/
   SENT_EXIT_CODES = [0, 3].freeze
+  USER_AGENT_LENGTH = 300
+  DIMENSION_FORMAT = /\A\d{1,5}\z/
+  PIXEL_RATIO_FORMAT = /\A\d{1,2}(\.\d{1,4})?\z/
 
   before_action :require_command
   rate_limit to: 5, within: 1.minute, only: :create, with: -> { reject }
@@ -42,12 +45,38 @@ class FeedbackController < ApplicationController
   end
 
   def sent?(screen, text, request_id)
-    body = "Draft feedback (screen: #{screen})\n\n#{text}\n"
+    body = ["Draft feedback (screen: #{screen})", *device_lines, '', text, ''].join("\n")
     _output, status = Open3.capture2e(*self.class.command, '--request-id', "draft-feedback-#{request_id}", '--json', '-',
                                       stdin_data: body)
     SENT_EXIT_CODES.include?(status.exitstatus)
   rescue SystemCallError
     false
+  end
+
+  # Device fields come from the browser, so only expected shapes are kept and anything else is dropped.
+  def device_lines
+    device = params[:device].is_a?(ActionController::Parameters) ? params[:device] : {}
+    user_agent = device[:user_agent].to_s.gsub(/[[:cntrl:]]/, ' ').squish.first(USER_AGENT_LENGTH)
+    [("Device: #{user_agent}" if user_agent.present?), viewport_line(device)].compact
+  end
+
+  def viewport_line(device)
+    size = size(device, :width, :height)
+    return unless size
+
+    visible = size(device, :visible_width, :visible_height)
+    ratio = device[:pixel_ratio].to_s
+    standalone = device[:standalone].to_s
+    line = "Viewport: #{size}"
+    line += " (visible #{visible})" if visible && visible != size
+    line += " @#{ratio.to_f.to_s.delete_suffix('.0')}x" if ratio.match?(PIXEL_RATIO_FORMAT)
+    line += ", standalone: #{standalone == 'true' ? 'yes' : 'no'}" if %w[true false].include?(standalone)
+    line
+  end
+
+  def size(device, width_key, height_key)
+    width, height = device.values_at(width_key, height_key).map(&:to_s)
+    "#{width}x#{height}" if width.match?(DIMENSION_FORMAT) && height.match?(DIMENSION_FORMAT)
   end
 
   def accept
