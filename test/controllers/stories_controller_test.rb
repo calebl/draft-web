@@ -81,6 +81,19 @@ class StoriesControllerTest < ActionDispatch::IntegrationTest
       assert_equal outline_item, assigns(:next_outline_item)
     end
 
+    should 'hide next outline item section when story has no outline items' do
+      get story_url(@story.id)
+      assert_select 'turbo-frame#next-outline-item', count: 0
+      assert_select 'h4', text: 'Next Outline Item', count: 0
+    end
+
+    should 'show next outline item section when all outline items are done' do
+      outline = Outline.create!(story: @story)
+      outline.outline_items.create!(text: 'Done Item', completed: true)
+      get story_url(@story.id)
+      assert_select 'turbo-frame#next-outline-item', text: /No outline items left./
+    end
+
     should 'prevent access to other users stories' do
       other_story = users(:admin).stories.create({ title: 'Other Story' })
       get story_url(other_story.id)
