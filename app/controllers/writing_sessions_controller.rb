@@ -71,12 +71,17 @@ class WritingSessionsController < ApplicationController
   def destroy
     @writing_session.destroy
     respond_to do |format|
-      format.html { redirect_to story_path(@story), notice: 'Session was successfully destroyed.', status: :see_other }
+      format.html { redirect_to after_destroy_path, notice: 'Session was successfully destroyed.', status: :see_other }
       format.json { head :no_content }
     end
   end
 
   private
+
+  # Deleting from the all-sessions list returns there instead of the story page.
+  def after_destroy_path
+    params[:show_all].present? ? story_writing_sessions_path(@story) : story_path(@story)
+  end
 
   # Only allow a list of trusted parameters through.
   def writing_session_params
