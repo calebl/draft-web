@@ -12,12 +12,27 @@ export default class extends Controller {
         this.textViewTarget.addEventListener("scroll", this.handleScroll);
         window.addEventListener("resize", this.handleViewportResize);
         window.visualViewport?.addEventListener("resize", this.handleViewportResize);
+        window.visualViewport?.addEventListener("scroll", this.handleViewportResize);
+        this.fitToVisibleViewport();
     }
 
     disconnect() {
         this.textViewTarget.removeEventListener("scroll", this.handleScroll);
         window.removeEventListener("resize", this.handleViewportResize);
         window.visualViewport?.removeEventListener("resize", this.handleViewportResize);
+        window.visualViewport?.removeEventListener("scroll", this.handleViewportResize);
+    }
+
+    // An on-screen keyboard shrinks the visible area without shrinking the page, and the
+    // browser scrolls the page to keep the composer in view, pushing the header off screen.
+    // Pin the writing screen to exactly the visible area so the header stays on top and the
+    // text and composer share what is left above the keyboard.
+    fitToVisibleViewport() {
+        const viewport = window.visualViewport;
+        if (!viewport) return;
+
+        this.element.style.setProperty("--visible-top", `${viewport.pageTop}px`);
+        this.element.style.setProperty("--visible-height", `${viewport.height}px`);
     }
 
     scrollToBottom() {
@@ -31,6 +46,7 @@ export default class extends Controller {
     }
 
     handleViewportResize() {
+        this.fitToVisibleViewport();
         if (this.isAtBottom) this.scrollToBottom();
     }
 
