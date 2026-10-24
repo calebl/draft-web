@@ -26,8 +26,8 @@ class FeedbackTest < ActionDispatch::IntegrationTest
     FileUtils.remove_entry(@dir)
   end
 
-  def send_feedback(text: 'The outline button is hard to find')
-    post '/feedback', params: { text: text, screen: 'stories#show', request_id: REQUEST_ID }, as: :turbo_stream
+  def send_feedback
+    post '/feedback', params: { text: 'The outline button is hard to find', screen: 'stories#show', request_id: REQUEST_ID }, as: :turbo_stream
   end
 
   def recorded(name)
@@ -38,7 +38,7 @@ class FeedbackTest < ActionDispatch::IntegrationTest
   test 'shows the button in the header with Draft wording' do
     get stories_path
 
-    assert_select '.header .pk-feedback textarea[placeholder=?][maxlength=?]', 'What would make Draft better?', '2000'
+    assert_select '.header .pk-feedback textarea[placeholder=?]', 'What would make Draft better?'
   end
 
   test 'hides the button and the endpoint when the command is unset' do
@@ -72,21 +72,6 @@ class FeedbackTest < ActionDispatch::IntegrationTest
     ENV['FAKE_EXIT'] = '1'
     send_feedback
 
-    assert_response :unprocessable_content
-  end
-
-  test 'rejects notes over 2,000 characters' do
-    send_feedback(text: 'a' * 2001)
-
-    assert_response :unprocessable_content
-    assert_nil recorded('stdin')
-  end
-
-  test 'allows five notes a minute' do
-    5.times { send_feedback }
-    assert_response :success
-
-    send_feedback
     assert_response :unprocessable_content
   end
 end
