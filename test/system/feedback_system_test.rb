@@ -25,12 +25,28 @@ class FeedbackSystemTest < ActionDispatch::SystemTestCase
     find('button[aria-label="Send feedback"]').click
     within 'dialog.feedback-dialog[open]' do
       fill_in 'feedback_text', with: 'Word counts could use a weekly view'
+      @device = page.evaluate_script(<<~JS)
+        ({
+          userAgent: navigator.userAgent,
+          width: window.innerWidth,
+          height: window.innerHeight,
+          visibleWidth: window.visualViewport ? Math.round(window.visualViewport.width) : null,
+          visibleHeight: window.visualViewport ? Math.round(window.visualViewport.height) : null,
+          pixelRatio: window.devicePixelRatio,
+          standalone: window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true
+        })
+      JS
       click_on 'Send'
     end
 
     assert_selector '.flash', text: 'Sent'
     assert_no_selector 'dialog.feedback-dialog[open]'
-    assert_equal "Draft feedback (screen: stories#show)\n\nWord counts could use a weekly view\n",
+    viewport = "#{@device['width']}x#{@device['height']}"
+    visible = "#{@device['visibleWidth']}x#{@device['visibleHeight']}"
+    viewport += " (visible #{visible})" if visible != viewport
+    viewport += " @#{@device['pixelRatio']}x, standalone: #{@device['standalone'] ? 'yes' : 'no'}"
+    assert_equal "Draft feedback (screen: stories#show)\nDevice: #{@device['userAgent']}\n" \
+                 "Viewport: #{viewport}\n\nWord counts could use a weekly view\n",
                  File.read(File.join(@dir, 'stdin'))
   end
 end
