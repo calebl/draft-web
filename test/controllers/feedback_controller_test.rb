@@ -42,6 +42,43 @@ class FeedbackControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Draft feedback (screen: stories#show)\n\nThe outline button is hard to find\n", recorded('stdin')
   end
 
+  def send_with_device(device)
+    post feedback_path, params: { text: 'Too cramped', screen: 'stories#show', request_id: REQUEST_ID, device: device },
+                        as: :turbo_stream
+  end
+
+  test 'adds a device block between the screen line and the text' do
+    send_with_device(user_agent: 'Mozilla/5.0 (iPhone)', width: '390', height: '844', visible_width: '390',
+                     visible_height: '400', pixel_ratio: '3', standalone: 'true')
+
+    assert_response :success
+    assert_equal "Draft feedback (screen: stories#show)\nDevice: Mozilla/5.0 (iPhone)\n" \
+                 "Viewport: 390x844 (visible 390x400) @3x, standalone: yes\n\nToo cramped\n", recorded('stdin')
+  end
+
+  test 'leaves out the visible size when it matches the viewport' do
+    send_with_device(width: '1280', height: '800', visible_width: '1280', visible_height: '800', pixel_ratio: '1.5',
+                     standalone: 'false')
+
+    assert_equal "Draft feedback (screen: stories#show)\nViewport: 1280x800 @1.5x, standalone: no\n\nToo cramped\n",
+                 recorded('stdin')
+  end
+
+  test 'strips control characters from the user agent and caps its length' do
+    send_with_device(user_agent: "Evil\nInjected: yes\t#{'a' * 400}")
+
+    line = recorded('stdin').lines[1].chomp
+    assert line.start_with?('Device: Evil Injected: yes a')
+    assert_equal "Device: #{'x' * FeedbackController::USER_AGENT_LENGTH}".length, line.length
+  end
+
+  test 'drops device fields with unexpected shapes' do
+    send_with_device(width: '390; rm', height: '844', pixel_ratio: 'big', standalone: 'maybe')
+
+    assert_response :success
+    assert_equal "Draft feedback (screen: stories#show)\n\nToo cramped\n", recorded('stdin')
+  end
+
   test 'treats exit code 3 as sent' do
     ENV['FAKE_EXIT'] = '3'
     send_feedback
