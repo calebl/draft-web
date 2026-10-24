@@ -10,7 +10,7 @@
           </dd>
         <% end %>
       <% else %>
-        <%= render partial: "writing_sessions/writing_session", collection: writing_sessions %>
+        <%= render partial: "writing_sessions/writing_session", collection: writing_sessions, locals: { show_all: true } %>
       <% end %>
     <% else %>
       <p class="empty-state">Nothing yet. Tap "New Session" to get started.</p>

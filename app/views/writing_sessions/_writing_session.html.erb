@@ -5,6 +5,6 @@
   </div>
   <div class="actions">
     <%= link_to 'Resume', edit_story_writing_session_path(writing_session.story_id, writing_session), class: 'action-link', data: {"turbo-frame": "_top"} %>
-    <%= link_to 'Delete', story_writing_session_path(writing_session.story_id, writing_session), method: :delete, class: 'action-link', data: { turbo_method:'delete', turbo_confirm: 'Are you sure?', turbo_frame: '_top' } %>
+    <%= link_to 'Delete', story_writing_session_path(writing_session.story_id, writing_session, show_all: local_assigns[:show_all].presence), method: :delete, class: 'action-link', data: { turbo_method:'delete', turbo_confirm: 'Are you sure?', turbo_frame: '_top' } %>
   </div>
 </dd>
