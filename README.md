@@ -96,3 +96,28 @@ size, pixel ratio, standalone mode) when it reported them, a blank line, then th
 text. Exit status 0 or 3 counts as sent. Feedback is limited to 2,000 characters and five
 submissions per minute. When the variable is unset, the button is hidden and the endpoint
 returns 404.
+
+## Running behind tailscale serve
+
+On a machine on a tailnet, draft-web can run as a systemd user service that listens only
+on `127.0.0.1:3000`, with `tailscale serve` providing the https address on port 8444. This
+follows the [pocket-kit local app pattern](https://github.com/calebl/pocket-kit/blob/main/docs/local-app-pattern.md).
+
+The install lives under `~/.local/share/draft-web/`: the app checkout in `app/`, the
+SQLite database in `data/`, `bin/start` copied to `bin/start`, and secrets (such as
+`SECRET_KEY_BASE`) in `secrets.env`, mode `600`, never committed.
+
+```sh
+cp bin/start ~/.local/share/draft-web/bin/start
+cp deploy/draft-web.service ~/.config/systemd/user/draft-web.service
+# edit RAILS_ALLOWED_HOSTS to the machine's tailnet name, e.g. mybox.tail1234.ts.net
+systemctl --user daemon-reload
+systemctl --user enable --now draft-web
+loginctl enable-linger "$USER"
+tailscale serve --bg --https=8444 http://127.0.0.1:3000
+```
+
+The unit sets `RAILS_ASSUME_SSL=true` because tailscale terminates TLS and forwards plain
+http, and `RAILS_FORCE_SSL=false` because forcing SSL sends HSTS for the shared tailnet
+host name, which would break other plain-http ports on the same machine. Adjust the ruby
+path in `PATH` to match the installed version.
