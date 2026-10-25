@@ -17,5 +17,3 @@
 5. Local and private: no accounts, no cloud service, and nothing leaves the machine unless the writer sends it.
 
 **Non-goals:** editing and revision tools, collaboration, hosting for others, AI writing help, and any motivation or tracking features.
-
-**Still open:** what "export to Scrivener" should look like, for example a folder of text files Scrivener can import, or a Scrivener project file. That can wait until fiction writing resumes.
