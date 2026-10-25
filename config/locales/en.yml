@@ -30,6 +30,9 @@
 # available at https://guides.rubyonrails.org/i18n.html.
 
 en:
+  pocket_kit:
+    feedback:
+      placeholder: "What would make Draft better?"
   hello: "Hello world"
   writing_sessions:
     create:

@@ -6,7 +6,7 @@ ruby '3.3.8'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 8.0.0'
 # Use Puma as the app server
-gem 'puma', '~> 6.4'
+gem 'puma', '~> 7.2'
 # Use SCSS for stylesheets
 gem 'sassc-rails'
 # Transpile app-like JavaScript. Read more: https://github.com/rails/webpacker
@@ -14,15 +14,16 @@ gem 'sassc-rails'
 gem 'acts_as_list'
 gem 'blazer'
 gem 'cancancan', '~> 3.2'
-gem 'importmap-rails', '~> 1.2'
+gem 'importmap-rails', '~> 2.0'
 gem 'jbuilder', '~> 2.11'
 gem 'mail', '~> 2.7'
+gem 'pocket_kit', github: 'calebl/pocket-kit', tag: 'v0.1.0'
 gem 'redis', '~> 5.0'
 gem 'solid_queue', '~> 1.1'
 gem 'sprockets-rails'
-gem 'stimulus-rails', '~> 1.3'
 gem 'sqlite3'
-gem 'turbo-rails', '~> 1.5'
+gem 'stimulus-rails', '~> 1.3'
+gem 'turbo-rails', '~> 2.0'
 
 # Use Active Storage variant
 # gem 'image_processing', '~> 1.2'

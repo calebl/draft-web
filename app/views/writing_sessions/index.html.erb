@@ -1,8 +1,8 @@
 <% content_for :header do %>
-  <h3><%= @story.title %> - Writing Sessions</h3>
+  <h3 class="title"><%= @story.title %> - Writing Sessions</h3>
   <div class="header-actions">
+    <%= pocket_kit_feedback %>
     <%= link_to 'Back', @story, class: 'header-action', data: {'turbo-action': 'restore'} %>
   </div>
 <% end %>
-
 <%= render partial: 'writing_sessions', locals: { story: @story, writing_sessions: @writing_sessions } %>

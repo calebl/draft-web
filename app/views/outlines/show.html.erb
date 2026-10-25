@@ -1,6 +1,7 @@
 <% content_for :header do %>
   <h3 class="title"><%= @story.title %> Outline</h3>
   <div class="header-actions">
+    <%= pocket_kit_feedback %>
     <%= link_to 'Back', story_path(@story), class: 'header-action', data: { 'turbo-action': 'restore' } %>
   </div>
 <% end %>
@@ -13,7 +14,7 @@
     <% end %>
   </turbo-frame>
 </div>
-<div>
+<div class="outline-header">
   <h4>All Items</h4>
   <turbo-frame id="outline_item_form">
     <a href="<%= new_story_outline_outline_item_path(@story)%>" class="button-link">Add New Item</a>

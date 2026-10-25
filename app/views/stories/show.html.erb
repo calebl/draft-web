@@ -1,10 +1,10 @@
 <% content_for :meta do %>
   <meta name="turbo-cache-control" content="no-cache">
 <% end %>
-
 <% content_for :header do %>
   <h3></h3>
   <div class="header-actions">
+    <%= pocket_kit_feedback %>
     <%= link_to "Outline", story_outline_path(@story), class: 'header-action', data: {'turbo-action': 'advance'} %>
     <%= link_to 'All Stories', stories_path, class: 'header-action', data: {'turbo-action': 'restore'} %>
   </div>
@@ -22,18 +22,20 @@
   <%= link_to 'New Session', new_story_writing_session_path(@story), class: 'primary-link button-link' %>
 </div>
 <div class="story-details">
-  <div>
-    <h4>Next Outline Item</h4>
-    <turbo-frame id="next-outline-item">
-      <% if @next_outline_item %>
-        <%= render partial: 'outline_items/outline_item', locals: {story: @story, item: @next_outline_item}%>
-      <% else %>
-        <div>No more items to complete!</div>
-      <% end %>
-    </turbo-frame>
-  </div>
+  <% if @story.outline_items.exists? %>
+    <div>
+      <h4>Next Outline Item</h4>
+      <turbo-frame id="next-outline-item">
+        <% if @next_outline_item %>
+          <%= render partial: 'outline_items/outline_item', locals: {story: @story, item: @next_outline_item}%>
+        <% else %>
+          <p class="empty-state">No outline items left.</p>
+        <% end %>
+      </turbo-frame>
+    </div>
+  <% end %>
   <div>
     <h4>Previous Sessions</h4>
     <%= render partial: 'writing_sessions/writing_sessions', locals: { story: @story, writing_sessions: @writing_sessions, show_one: true } %>
-  <div>
+  </div>
 </div>

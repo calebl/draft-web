@@ -4,19 +4,14 @@ import $ from 'jquery'
 export default class extends Controller {
   static targets = ["text"];
 
-  connect() {
-    var self = this;
-    this.textTarget.addEventListener("keyup", (event) => {
-      const currentHeight = parseInt(self.textTarget.style.height)
-      if(event.code !== 'Backspace'){
-        if(currentHeight < self.textTarget.scrollHeight)
-          self.textTarget.style.height = self.textTarget.scrollHeight + 30 + "px";
-      }
-    });
+  resize() {
+    this.textTarget.style.height = "auto";
+    this.textTarget.style.height = this.textTarget.scrollHeight + "px";
   }
 
   textTargetConnected(el) {
-    el.style.height = el.scrollHeight + 30 + "px";
+    el.rows = 1;
+    this.resize();
   }
 
   submit(event){

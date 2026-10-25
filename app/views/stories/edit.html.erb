@@ -1,23 +1,16 @@
 <% content_for :header do %>
-  <h3>Edit Story Details</h3>
+  <h3 class="title">Edit Story Details</h3>
   <div class="header-actions">
+    <%= pocket_kit_feedback %>
     <%= link_to 'View Story', story_path(@story), class: 'header-action', data: {'turbo-action': 'restore'} %>
   </div>
 <% end %>
 <turbo-frame id="story_title">
-  <%= form_with(model: @story, class: 'update-story-form') do |form| %>
-    <% if @story.errors.any? %>
-      <div id="error_explanation">
-        <h2><%= pluralize(@story.errors.count, "error") %> prohibited this story from being saved:</h2>
-        <ul>
-          <% @story.errors.full_messages.each do |message| %>
-            <li><%= message %></li>
-          <% end %>
-        </ul>
-      </div>
-    <% end %>
+  <%= form_with(model: @story, class: 'update-story-form simple-form') do |form| %>
+    <%= render "shared/form_errors", model: @story %>
+    <%= form.label :title %>
     <%= form.text_field :title, value: @story.title, placeholder: 'Enter title' %>
     <%= form.submit "Update" %>
-    <a href="<%= story_path(@story) %>">cancel</a>
+    <a href="<%= story_path(@story) %>" class="cancel-link">Cancel</a>
   <% end %>
 </turbo-frame>

@@ -103,6 +103,34 @@ class WritingSessionsControllerTest < ActionDispatch::IntegrationTest
     assert_equal @story, @writing_session.reload.story
   end
 
+  test 'destroying from the all-sessions list returns to it' do
+    delete story_writing_session_url(@story, @writing_session, show_all: true)
+
+    assert_redirected_to story_writing_sessions_url(@story)
+    follow_redirect!
+    assert_select '.flash[role=status]', text: 'Session was successfully destroyed.'
+  end
+
+  test 'all-sessions list delete links keep the list' do
+    get story_writing_sessions_url(@story)
+
+    assert_select "a[data-turbo-method=delete][href=?]", story_writing_session_path(@story, @writing_session, show_all: true)
+  end
+
+  test 'story page delete link returns to the story page' do
+    get story_url(@story)
+
+    assert_select "a[data-turbo-method=delete][href=?]", story_writing_session_path(@story, @writing_session)
+  end
+
+  test 'shows the destroy notice as a note, not a script' do
+    delete story_writing_session_url(@story, @writing_session)
+    follow_redirect!
+
+    assert_select '.flash[role=status]', text: 'Session was successfully destroyed.'
+    assert_select 'script', text: /toastr/, count: 0
+  end
+
   test 'should protect viewing writing sessions from other users' do
     act_as users(:jane)
 

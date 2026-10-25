@@ -1,0 +1,29 @@
+# systemd user unit for draft-web behind tailscale serve.
+# Before installing, replace <machine>.<tailnet>.ts.net with the machine's
+# tailnet host name; see "Running behind tailscale serve" in README.md.
+
+[Unit]
+Description=draft-web (Rails) on 127.0.0.1:3000 behind tailscale serve https :8444
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+EnvironmentFile=%h/.local/share/draft-web/secrets.env
+Environment=PATH=%h/.local/share/mise/installs/ruby/3.3.8/bin:/usr/local/bin:/usr/bin
+Environment=RAILS_ENV=production
+Environment=BUNDLE_DEPLOYMENT=1
+Environment="BUNDLE_WITHOUT=development:test"
+Environment=DATABASE_URL=sqlite3:%h/.local/share/draft-web/data/production.sqlite3
+Environment=RAILS_FORCE_SSL=false
+Environment=RAILS_ASSUME_SSL=true
+Environment=RAILS_LOG_LEVEL=info
+Environment=RAILS_ALLOWED_HOSTS=<machine>.<tailnet>.ts.net
+Environment=PIDFILE=%t/draft-web.pid
+ExecStart=%h/.local/share/draft-web/bin/start
+Restart=on-failure
+RestartSec=5
+TimeoutStartSec=600
+
+[Install]
+WantedBy=default.target

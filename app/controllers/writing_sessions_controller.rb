@@ -95,7 +95,7 @@ class WritingSessionsController < ApplicationController
     @writing_session.destroy
     respond_to do |format|
       format.html do
-        redirect_to story_path(@story),
+        redirect_to after_destroy_path,
                     notice: I18n.t('writing_sessions.destroy.success'),
                     status: :see_other
       end
@@ -104,6 +104,11 @@ class WritingSessionsController < ApplicationController
   end
 
   private
+
+  # Deleting from the all-sessions list returns there instead of the story page.
+  def after_destroy_path
+    params[:show_all].present? ? story_writing_sessions_path(@story) : story_path(@story)
+  end
 
   # Only allow a list of trusted parameters through.
   def writing_session_params

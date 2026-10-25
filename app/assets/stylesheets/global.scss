@@ -26,35 +26,48 @@ body {
     right: 0;
   
     .header {
-      height: 30px;
+      min-height: $header-height;
       width: 100%;
+      padding-top: $header-padding-top;
       text-align: center;
-  
+
       display: flex;
-      align-items: start;
+      align-items: center;
       justify-content: space-between;
+      gap: 8px;
       user-select: none;
-  
+
       .title {
-        margin-top: 0;
+        margin: 0;
         color: gray;
         flex: 1;
         font-size: 14px;
         line-height: 30px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
-  
+
+      .header-actions {
+        display: flex;
+        gap: 6px;
+        margin-left: auto;
+      }
+
       .header-action {
+        display: inline-flex;
+        align-items: center;
+        min-height: 30px;
         color: gray;
         border: 1px solid gray;
         background: none;
         border-radius: 5px;
-        padding: 5px 10px;
+        padding: 0 10px;
         font-weight: bold;
         font-size: 12px;
         box-sizing: border-box;
         text-decoration: none;
-        margin-right: 5px;
-  
+
         &:hover {
           color: black;
           background: lightgray;
@@ -108,15 +121,62 @@ button, input[type=submit] {
 }
 
 input[type=text] {
+  font-family: Roboto, sans-serif;
+  font-size: 16px;
+  padding: 6px 2px;
+  min-width: 0;
+  max-width: 100%;
   background: transparent;
   color: $dark;
   border: none;
   border-bottom: 1px solid $dark;
+  border-radius: 0;
   outline: none;
 
   [data-theme="dark"] & {
     color: $light;
     border-bottom: 1px solid $light;
+  }
+}
+
+// A small label above a full-width field, with the buttons on the row below.
+.simple-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 480px;
+
+  label {
+    flex-basis: 100%;
+    color: gray;
+    font-size: 12px;
+  }
+
+  input[type=text] {
+    flex: 1 1 100%;
+  }
+
+  // Rails wraps invalid fields in this div; let the field keep its place in the layout.
+  .field_with_errors {
+    display: contents;
+  }
+
+  .cancel-link {
+    opacity: 0.6;
+    padding: 8px 4px;
+  }
+}
+
+// List and form pages start at the top and scroll, instead of floating mid-screen.
+body.stories.index, body.stories.new, body.stories.edit, body.stories.create, body.stories.update,
+body.outlines, body.writing_sessions.index, body.writing_sessions.show {
+  .page > .container {
+    justify-content: flex-start;
+    padding-top: 24px;
+    box-sizing: border-box;
+    overflow-y: auto;
   }
 }
 
@@ -135,8 +195,96 @@ textarea {
   }
 }
 
+// The header's feedback button (pocket-kit), drawn like the other header actions.
+.pk-feedback {
+  --pk-feedback-color: #{$dark};
+  --pk-feedback-background: #{$white};
+  --pk-feedback-border: gray;
+  --pk-feedback-radius: #{$border-radius};
+  --pk-feedback-backdrop: rgba(0, 0, 0, 0.3);
+
+  [data-theme="dark"] & {
+    --pk-feedback-color: #{$light};
+    --pk-feedback-background: #{$dark};
+  }
+}
+
+.page .header .pk-feedback-toggle {
+  min-height: 30px;
+  padding: 0 10px;
+  color: gray;
+  border-color: transparent;
+  border-radius: 5px;
+
+  &:hover {
+    color: black;
+    background: lightgray;
+  }
+}
+
+.pk-feedback-dialog {
+  max-width: 400px;
+  user-select: text;
+}
+
 .hidden, .hide {
   display: none;
+}
+
+// A short-lived note under the header after a redirect, e.g. "Session was successfully destroyed.".
+.flash {
+  position: fixed;
+  top: 48px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  width: max-content;
+  max-width: calc(100% - 40px);
+  box-sizing: border-box;
+  padding: 8px 16px;
+  border-radius: $border-radius;
+  background: $dark;
+  color: $white;
+  font-size: 14px;
+  pointer-events: none;
+  animation: flash-fade 4s ease forwards;
+
+  [data-theme="dark"] & {
+    background: $light;
+    color: $dark;
+  }
+}
+
+@keyframes flash-fade {
+  0%, 80% { opacity: 1; }
+  100% { opacity: 0; visibility: hidden; }
+}
+
+// Rails wraps invalid fields in this div; let the field keep its own layout.
+.field_with_errors {
+  display: contents;
+}
+
+.empty-state {
+  color: gray;
+  margin: 0;
+}
+
+#error_explanation {
+  flex-basis: 100%;
+  border-left: 2px solid currentColor;
+  padding: 4px 12px;
+  margin-bottom: 8px;
+
+  h2 {
+    font-size: 14px;
+    margin: 0 0 4px;
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 16px;
+  }
 }
 
 body[data-theme="dark"] {

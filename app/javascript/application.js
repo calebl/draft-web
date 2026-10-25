@@ -3,7 +3,4 @@
 import '@hotwired/turbo-rails'
 import 'jquery'
 import 'sortablejs'
-import toastr from 'toastr'
 import 'controllers'
-
-window.toastr = toastr

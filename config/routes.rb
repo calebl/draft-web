@@ -5,6 +5,8 @@ Rails.application.routes.draw do
     resource :theme, only: [:update]
   end
 
+  mount PocketKit::Engine, at: '/'
+
   resources :stories do
     resources :writing_sessions do
       patch :move, on: :member

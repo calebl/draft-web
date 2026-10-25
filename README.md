@@ -84,3 +84,41 @@ Named volumes (`draft-data` and `draft-storage`) persist the database and upload
 In production, set `RAILS_ALLOWED_HOSTS` to a comma-separated list of host names or
 addresses (for example `myhost.example.ts.net,100.64.0.1`) to reject requests for any
 other `Host`. When it is unset, every host is accepted.
+
+## Feedback
+
+The feedback button comes from the [pocket-kit](https://github.com/calebl/pocket-kit) gem,
+configured in `config/initializers/pocket_kit.rb`. Set `DRAFT_FEEDBACK_COMMAND` in the server
+environment to a command (split like a shell word list, but run without a shell) to show a
+feedback button in the page header. Sending runs the command with
+`--request-id draft-feedback-<uuid> --json -` appended and the message on stdin: a
+`Draft feedback (screen: controller#action)` line, a blank line, the typed text, then a
+`Device:` block describing the browser (user agent, screen, window and visible size, pixel
+ratio, home screen app, color scheme) when it reported them. Exit status 0 or 3 counts as sent. Feedback is limited to 2,000 characters and five
+submissions per minute. When the variable is unset, the button is hidden and the endpoint
+returns 404.
+
+## Running behind tailscale serve
+
+On a machine on a tailnet, draft-web can run as a systemd user service that listens only
+on `127.0.0.1:3000`, with `tailscale serve` providing the https address on port 8444. This
+follows the [pocket-kit local app pattern](https://github.com/calebl/pocket-kit/blob/main/docs/local-app-pattern.md).
+
+The install lives under `~/.local/share/draft-web/`: the app checkout in `app/`, the
+SQLite database in `data/`, `bin/start` copied to `bin/start`, and secrets (such as
+`SECRET_KEY_BASE`) in `secrets.env`, mode `600`, never committed.
+
+```sh
+cp bin/start ~/.local/share/draft-web/bin/start
+cp deploy/draft-web.service ~/.config/systemd/user/draft-web.service
+# edit RAILS_ALLOWED_HOSTS to the machine's tailnet name, e.g. mybox.tail1234.ts.net
+systemctl --user daemon-reload
+systemctl --user enable --now draft-web
+loginctl enable-linger "$USER"
+tailscale serve --bg --https=8444 http://127.0.0.1:3000
+```
+
+The unit sets `RAILS_ASSUME_SSL=true` because tailscale terminates TLS and forwards plain
+http, and `RAILS_FORCE_SSL=false` because forcing SSL sends HSTS for the shared tailnet
+host name, which would break other plain-http ports on the same machine. Adjust the ruby
+path in `PATH` to match the installed version.

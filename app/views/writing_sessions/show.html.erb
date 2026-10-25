@@ -1,15 +1,15 @@
 <% content_for :header do %>
-  <h3 class="title">Viewing Session</h3>
+  <h3 class="title"><%= @story.title %></h3>
   <div class="header-actions">
+    <%= pocket_kit_feedback %>
     <%= link_to 'Continue', edit_story_writing_session_path(@story, @writing_session), class: 'header-action', data: { 'turbo-action': 'replace' } %>
     <%= link_to 'Back', story_writing_sessions_path(@story), class: 'header-action', data: { 'turbo-action': 'restore' } %>
   </div>
 <% end %>
-<%= render 'text', text: @writing_session.text %>
-<p>
-  <strong>Word count:</strong>
-  <%= @writing_session.word_count %>
+<p class="session-meta">
+  <%= @writing_session.created_at.strftime('%B %-d, %Y') %> · <%= pluralize(@writing_session.word_count || 0, 'word') %>
 </p>
+<%= render 'text', text: @writing_session.text %>
 <% other_stories = current_user.stories.where.not(id: @story.id).order(:title) %>
 <% if other_stories.any? %>
   <%= form_with(url: move_story_writing_session_path(@story, @writing_session), method: :patch, class: 'move-session-form') do |form| %>
