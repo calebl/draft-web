@@ -29,6 +29,30 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
     end
   end
 
+  test 'Done returns to a story page that lists the session just written' do
+    visit story_path(stories(:one))
+    assert_text 'Writing Sessions: 1'
+    # Keep a copy of the story page from before the session existed.
+    execute_script('window.storyBeforeSession = document.documentElement.outerHTML')
+    click_on 'New Session'
+    fill_in 'composer', with: 'A brand new session'
+    send_keys :enter
+    within '.text-container' do
+      assert_text 'A brand new session'
+    end
+
+    # Turbo can still be holding that earlier copy, as it was on the phone: Done must
+    # not show it in place of the current story page.
+    execute_script(<<~JS, story_path(stories(:one)))
+      Turbo.session.view.snapshotCache.put(new URL(arguments[0], location.origin), Turbo.PageSnapshot.fromHTMLString(window.storyBeforeSession));
+    JS
+    click_on 'Done'
+
+    assert_current_path story_path(stories(:one))
+    assert_text 'Writing Sessions: 2'
+    assert_selector '.session', text: 'A brand new session'
+  end
+
   test 'Submitting text keeps the page scrolled where it was' do
     visit edit_story_writing_session_path(stories(:one), writing_sessions(:one))
 
