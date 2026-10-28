@@ -17,6 +17,9 @@
       <small class="by-text">by Curiosity & Conflict</small>
     </div>
     <div>
+      <% if @resume_session %>
+        <%= link_to "Resume writing: #{@resume_session.story.title}", edit_story_writing_session_path(@resume_session.story, @resume_session), class: 'secondary-link resume-session-link' %>
+      <% end %>
       <div class="stories-list">
         <% if @stories.count > 0 %>
           <%= render "stories/stories" %>

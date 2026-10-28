@@ -2,7 +2,8 @@
 
 Draft runs as a local app for a single person: there is no sign up or log in.
 On first visit it creates a local user that owns your stories. If you point it
-at an existing database, it acts as the oldest account in it.
+at an existing database, it acts as the oldest account in it. When writing
+sessions exist, the home page links to the most recently updated one.
 
 ## Running Locally
 
