@@ -53,6 +53,15 @@ class WritingSessionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :see_other
   end
 
+  test 'update without session parameters is rejected' do
+    original_text = @writing_session.text
+
+    patch story_writing_session_url(@story, @writing_session)
+
+    assert_response :bad_request
+    assert_equal original_text, @writing_session.reload.text
+  end
+
   test 'should destroy session' do
     assert_difference('WritingSession.count', -1) do
       delete story_writing_session_url(@story, @writing_session)

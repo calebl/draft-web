@@ -82,9 +82,11 @@ class WritingSessionsController < ApplicationController
     params[:show_all].present? ? story_writing_sessions_path(@story) : story_path(@story)
   end
 
-  # Only allow a list of trusted parameters through. New Session and Write post none.
+  # Only allow a list of trusted parameters through.
   def writing_session_params
-    params.fetch(:writing_session, {}).permit(:text)
+    return ActionController::Parameters.new if action_name == 'create' && !params.key?(:writing_session)
+
+    params.expect(writing_session: [:text])
   end
 
   def word_count_per_day
