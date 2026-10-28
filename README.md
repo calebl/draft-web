@@ -99,6 +99,18 @@ ratio, home screen app, color scheme) when it reported them. Exit status 0 or 3 
 submissions per minute. When the variable is unset, the button is hidden and the endpoint
 returns 404.
 
+## Error monitoring
+
+Error monitoring also comes from pocket-kit, configured in the same initializer. Set
+`DRAFT_ERRORS_COMMAND` in the server environment to a command (run the same way as the
+feedback command) to report unhandled request exceptions, exceptions that escape a job,
+uncaught page errors, and unhandled promise rejections. Each report runs the command with
+`--request-id draft-errors-<uuid> --json -` appended and the JSON report on stdin, its text
+starting `Draft error (source: ...)`. Repeats of the same error within ten minutes are
+counted rather than run again; the next occurrence after that window carries the count.
+The page posts errors only to Draft, and Draft hands reports only to this local command, so
+nothing leaves the machine. When the variable is unset, nothing is reported.
+
 ## Running behind tailscale serve
 
 On a machine on a tailnet, draft-web can run as a systemd user service that listens only
