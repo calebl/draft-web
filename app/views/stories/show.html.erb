@@ -19,7 +19,7 @@
     <div>Word Count Total: <%= @word_count_total %></div>
     <div>Writing Sessions: <%= @story.writing_sessions.count%></div>
   </div>
-  <%= link_to 'New Session', new_story_writing_session_path(@story), class: 'primary-link button-link' %>
+  <%= link_to 'New Session', story_writing_sessions_path(@story), class: 'primary-link button-link', data: { turbo_method: :post } %>
 </div>
 <div class="story-details">
   <% if @story.outline_items.exists? %>

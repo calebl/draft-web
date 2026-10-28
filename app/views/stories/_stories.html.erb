@@ -4,7 +4,7 @@
       <h3><%= story.title %></h3>
       <div class="story-actions">
         <a href="<%= story_path(story) %>" data-turbo-frame="_top">View</a>
-        <a href="<%= new_story_writing_session_path(story) %>" data-turbo-frame="_top">Write</a>
+        <%= link_to 'Write', story_writing_sessions_path(story), data: { turbo_method: :post, turbo_frame: '_top' } %>
         <%= link_to 'Delete', story_path(story), method: :delete, data: { turbo_method:'delete', turbo_confirm: 'Are you sure?'} %>
       </div>
     </div>

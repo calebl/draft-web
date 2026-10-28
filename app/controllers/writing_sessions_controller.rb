@@ -16,11 +16,9 @@ class WritingSessionsController < ApplicationController
   def show; end
 
   # GET /writing_sessions/new
+  # Sessions are only started by a POST to create; Turbo prefetches GET links on hover.
   def new
-    @title = 'Compose'
-    @writing_session = @story.writing_sessions.create(user_id: current_user.id, text: '')
-
-    redirect_to edit_story_writing_session_path(@story, @writing_session.id)
+    redirect_to story_path(@story)
   end
 
   # GET /writing_sessions/1/edit
@@ -29,9 +27,10 @@ class WritingSessionsController < ApplicationController
   # POST /writing_sessions
   # POST /writing_sessions.json
   def create
-    text = "<div>#{writing_session_params[:text]}</div>"
+    # New Session and Write post no text: they start an empty session.
+    text = params.key?(:writing_session) ? "<div>#{writing_session_params[:text]}</div>" : ''
 
-    @writing_session = @story.writing_sessions.new(writing_session_params.merge(text:, user_id: current_user.id))
+    @writing_session = @story.writing_sessions.new(text:, user_id: current_user.id)
     @writing_session.word_count = @writing_session.calculate_word_count
 
     respond_to do |format|
@@ -83,9 +82,9 @@ class WritingSessionsController < ApplicationController
     params[:show_all].present? ? story_writing_sessions_path(@story) : story_path(@story)
   end
 
-  # Only allow a list of trusted parameters through.
+  # Only allow a list of trusted parameters through. New Session and Write post none.
   def writing_session_params
-    params.expect(writing_session: [:text])
+    params.fetch(:writing_session, {}).permit(:text)
   end
 
   def word_count_per_day

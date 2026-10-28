@@ -13,11 +13,19 @@ class WritingSessionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test 'should get new' do
+  test 'get new creates no session' do
+    assert_no_difference('WritingSession.count') do
+      get new_story_writing_session_url(@story), headers: { 'X-Sec-Purpose' => 'prefetch' }
+    end
+    assert_redirected_to story_url(@story)
+  end
+
+  test 'create without text starts an empty session' do
     assert_difference('WritingSession.count') do
-      get new_story_writing_session_url(@story)
+      post story_writing_sessions_url(@story)
     end
     assert_redirected_to edit_story_writing_session_url(@story, WritingSession.last)
+    assert_equal '', WritingSession.last.text
   end
 
   test 'should create session' do
