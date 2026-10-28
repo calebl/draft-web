@@ -1,9 +1,21 @@
-const CACHE_NAME = "draft-v1";
+const CACHE_NAME = "draft-v2";
 const OFFLINE_URL = "/offline.html";
 
 const PRECACHE_URLS = [
   "/offline.html"
 ];
+
+// Only static files are cached. App pages and other dynamic responses always go to
+// the server: a stored page can replay an old redirect, such as New Session landing
+// on an earlier session.
+const STATIC_PATH_PREFIXES = ["/assets/", "/icons/", "/fonts/"];
+
+const isStaticAsset = (request) => {
+  const url = new URL(request.url);
+  return request.method === "GET" &&
+    url.origin === self.location.origin &&
+    STATIC_PATH_PREFIXES.some((prefix) => url.pathname.startsWith(prefix));
+};
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -28,6 +40,8 @@ self.addEventListener("fetch", (event) => {
     );
     return;
   }
+
+  if (!isStaticAsset(event.request)) return;
 
   event.respondWith(
     caches.match(event.request).then((cached) => {
