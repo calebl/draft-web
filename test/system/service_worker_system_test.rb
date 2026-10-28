@@ -40,6 +40,6 @@ class ServiceWorkerSystemTest < ActionDispatch::SystemTestCase
 
     newest = story.writing_sessions.order(:id).last
     assert_includes newest.reload.text, 'Second new session'
-    assert_not_includes story.writing_sessions.find_by!(id: first_path[%r{/writing_sessions/(\d+)}, 1]).text.to_s, 'Second new session'
+    assert_not_includes story.writing_sessions.find(first_path[%r{/writing_sessions/(\d+)}, 1]).text.to_s, 'Second new session'
   end
 end
