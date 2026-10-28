@@ -37,7 +37,6 @@ class WritingSessionsController < ApplicationController
       if @writing_session.save
         format.html do
           redirect_to edit_story_writing_session_path(@story, @writing_session.id),
-                      notice: 'Session was successfully created.',
                       status: :see_other
         end
         format.json { render json: @writing_session, status: :ok }
