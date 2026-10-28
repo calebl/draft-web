@@ -103,12 +103,13 @@ returns 404.
 
 Error monitoring also comes from pocket-kit, configured in the same initializer. Set
 `DRAFT_ERRORS_COMMAND` in the server environment to a command (run the same way as the
-feedback command) to report unhandled request exceptions, exceptions that escape a job, and
-uncaught errors in the page. Each report runs the command with
+feedback command) to report unhandled request exceptions, exceptions that escape a job,
+uncaught page errors, and unhandled promise rejections. Each report runs the command with
 `--request-id draft-errors-<uuid> --json -` appended and the JSON report on stdin, its text
 starting `Draft error (source: ...)`. Repeats of the same error within ten minutes are
-counted and sent with the next report rather than run again. When the variable is unset,
-nothing is reported.
+counted rather than run again; the next occurrence after that window carries the count.
+The page posts errors only to Draft, and Draft hands reports only to this local command, so
+nothing leaves the machine. When the variable is unset, nothing is reported.
 
 ## Running behind tailscale serve
 
