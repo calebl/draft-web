@@ -50,6 +50,13 @@ class ErrorsTest < ActionDispatch::IntegrationTest
     assert_select 'head meta[name="pocket-kit-screen"][content=?]', 'stories#index'
   end
 
+  test 'includes the errors tag in the home page head' do
+    get root_path
+
+    assert_select 'head meta[name="pocket-kit-errors"]'
+    assert_select 'head meta[name="pocket-kit-screen"][content=?]', 'home#index'
+  end
+
   test 'runs DRAFT_ERRORS_COMMAND for an unhandled request exception' do
     request_broken_stories
 
