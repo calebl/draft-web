@@ -69,7 +69,7 @@ class WritingSessionsController < ApplicationController
   def destroy
     @writing_session.destroy
     respond_to do |format|
-      format.html { redirect_to after_destroy_path, notice: 'Session was successfully destroyed.', status: :see_other }
+      format.html { redirect_to after_destroy_path, notice: I18n.t('writing_sessions.destroyed'), status: :see_other }
       format.json { head :no_content }
     end
   end
