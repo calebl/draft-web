@@ -30,6 +30,8 @@
 # available at https://guides.rubyonrails.org/i18n.html.
 
 en:
+  writing_sessions:
+    destroyed: "Session was successfully destroyed."
   pocket_kit:
     feedback:
       placeholder: "What would make Draft better?"

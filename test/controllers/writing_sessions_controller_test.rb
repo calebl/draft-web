@@ -26,6 +26,7 @@ class WritingSessionsControllerTest < ActionDispatch::IntegrationTest
     end
     assert_redirected_to edit_story_writing_session_url(@story, WritingSession.last)
     assert_equal '', WritingSession.last.text
+    assert_nil flash[:notice]
   end
 
   test 'should create session' do
