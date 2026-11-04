@@ -1,5 +1,6 @@
 # The header's feedback button and error monitoring, from the pocket-kit gem.
-# See "Feedback" and "Error monitoring" in README.md.
+# See "Feedback" and "Error monitoring" in README.md. Session replay is on;
+# typed text stays masked (the default).
 PocketKit.configure do |config|
   config.feedback.command_env = 'DRAFT_FEEDBACK_COMMAND'
   config.feedback.heading = 'Draft feedback'
@@ -9,4 +10,6 @@ PocketKit.configure do |config|
   config.errors.command_env = 'DRAFT_ERRORS_COMMAND'
   config.errors.heading = 'Draft'
   config.errors.request_id_prefix = 'draft-errors'
+
+  config.replay.enabled = true
 end
