@@ -5,3 +5,7 @@
 //= link pocket_kit/feedback_controller.js
 //= link pocket_kit/pocket_kit.js
 //= link pocket_kit/vendor/rrweb-record-2.1.7.min.js
+//= link pocket_kit/vendor/rrweb-player-2.1.7.min.js
+//= link pocket_kit/vendor/rrweb-player-2.1.7.css
+//= link pocket_kit/replay_viewer.js
+//= link pocket_kit/replay.css
