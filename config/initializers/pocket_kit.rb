@@ -1,6 +1,5 @@
-# The header's feedback button and error monitoring, from the pocket-kit gem.
-# See "Feedback" and "Error monitoring" in README.md. Session replay is on;
-# typed text stays masked (the default).
+# The header's feedback button, error monitoring, and session replay come from pocket-kit.
+# See the corresponding sections in README.md.
 PocketKit.configure do |config|
   config.feedback.command_env = 'DRAFT_FEEDBACK_COMMAND'
   config.feedback.heading = 'Draft feedback'
