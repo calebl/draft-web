@@ -3,6 +3,12 @@ require 'test_helper'
 class HomeTest < ActionDispatch::IntegrationTest
   setup do
     act_as users(:bob)
+    @feedback_command = ENV.fetch('DRAFT_FEEDBACK_COMMAND', nil)
+    ENV['DRAFT_FEEDBACK_COMMAND'] = 'true'
+  end
+
+  teardown do
+    ENV['DRAFT_FEEDBACK_COMMAND'] = @feedback_command
   end
 
   test 'show main after sign in' do
@@ -12,6 +18,7 @@ class HomeTest < ActionDispatch::IntegrationTest
 
     assert_template 'layouts/home'
     assert_select 'a[href=?]', stories_path, count: 1
+    assert_select 'meta[name="pocket-kit-replay"][data-show-typed-text="false"]', count: 1
   end
 
   test 'blazer route gives access denied for non admin' do

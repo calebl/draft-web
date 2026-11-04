@@ -99,6 +99,15 @@ ratio, home screen app, color scheme) when it reported them. Exit status 0 or 3 
 submissions per minute. When the variable is unset, the button is hidden and the endpoint
 returns 404.
 
+## Session replay
+
+Session replay is enabled for feedback notes and page errors. Pocket-kit keeps about the
+last 30 seconds of page activity in memory and sends it only with a report to Draft. Typed
+text remains masked. Accepted replays are saved under `tmp/pocket_kit/replays`, and the
+report includes a viewer path; those replay pages are currently viewable only from the
+machine running Draft. A page error reported while the page is closing may be too large to
+arrive.
+
 ## Error monitoring
 
 Error monitoring also comes from pocket-kit, configured in the same initializer. Set
