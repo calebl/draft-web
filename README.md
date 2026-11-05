@@ -104,8 +104,9 @@ returns 404.
 Session replay is enabled for feedback notes and page errors. Pocket-kit keeps about the
 last 30 seconds of page activity in memory and sends it only with a report to Draft. Typed
 text remains masked. Accepted replays are saved under `tmp/pocket_kit/replays`, and the
-report includes a viewer path; those replay pages are currently viewable only from the
-machine running Draft. A page error reported while the page is closing may be too large to
+report includes a viewer path; those replay pages answer only requests made on the machine
+running Draft. Stored replays expire after 7 days and are deleted at the next report, app
+start, or replay view. A page error reported while the page is closing may be too large to
 arrive.
 
 ## Error monitoring
