@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/calebl/pocket-kit.git
-  revision: 089e3331a948c36c784009589d939dd95aeea446
-  ref: 089e3331a948c36c784009589d939dd95aeea446
+  revision: 98e9168bb58a6c879b00305a2dc097ffda8e7384
+  ref: 98e9168bb58a6c879b00305a2dc097ffda8e7384
   specs:
-    pocket_kit (0.3.0)
+    pocket_kit (0.4.0)
       importmap-rails (>= 2.0)
       rails (>= 8.0)
       stimulus-rails (>= 1.3)
