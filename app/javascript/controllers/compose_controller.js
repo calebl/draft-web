@@ -96,28 +96,39 @@ export default class extends Controller {
         if (event.detail.sessionId !== this.sessionId) return;
 
         // A paragraph home just saved joins the saved text until the page is refreshed.
-        const saved = event.detail.saved &&
-            this.unsavedTarget.querySelector(`[data-paragraph-id="${event.detail.saved}"]`);
-        if (saved) {
-            saved.classList.remove("unsaved");
-            this.savedTextTarget.appendChild(saved);
-            this.savedHereWords += countWords(saved.textContent);
-        }
+        const saved = this.markSaved(event.detail.saved);
         this.renderUnsaved();
         if (this.isAtBottom) this.scrollToBottom();
-
-        // Everything is home: show the saved session as home has it, unless a paragraph is
-        // being typed, which a refresh would clear.
-        if (saved && this.unsavedTarget.childElementCount === 0 && this.textTarget.value === "") {
-            window.Turbo.visit(window.location.href, {action: "replace"});
-        }
+        if (saved) this.visitSavedSessionIfReady();
     }
 
-    // The session was deleted elsewhere and its waiting paragraphs went to a new one.
+    // A temporary or deleted session's waiting paragraphs went to a new session.
     handleUnsavedMoved(event) {
         if (event.detail.from !== this.sessionId) return;
 
-        window.Turbo.visit(`/stories/${event.detail.story}/writing_sessions/${event.detail.to}/edit`, {action: "replace"});
+        this.markSaved(event.detail.saved);
+        this.element.dataset.sessionId = String(event.detail.to);
+        this.savedSessionUrl = `/stories/${event.detail.story}/writing_sessions/${event.detail.to}/edit`;
+        this.renderUnsaved();
+        if (this.isAtBottom) this.scrollToBottom();
+        this.visitSavedSessionIfReady();
+    }
+
+    markSaved(paragraphId) {
+        const saved = paragraphId &&
+            this.unsavedTarget.querySelector(`[data-paragraph-id="${paragraphId}"]`);
+        if (!saved) return false;
+
+        saved.classList.remove("unsaved");
+        this.savedTextTarget.appendChild(saved);
+        this.savedHereWords += countWords(saved.textContent);
+        return true;
+    }
+
+    visitSavedSessionIfReady() {
+        if (this.unsavedTarget.childElementCount === 0 && this.textTarget.value === "") {
+            visit(this.savedSessionUrl || window.location.href);
+        }
     }
 
     submit(event) {
@@ -139,5 +150,11 @@ export default class extends Controller {
         }
     }
 }
+
+// The offline writing page runs without Turbo.
+const visit = (url) => {
+    if (window.Turbo) window.Turbo.visit(url, {action: "replace"});
+    else window.location.replace(url);
+};
 
 const countWords = (text) => text.split(/\s+/).filter(Boolean).length;

@@ -13,14 +13,14 @@
     <%= pocket_kit_errors_tag %>
     <%= pocket_kit_replay_tag %>
     <%= javascript_importmap_tags %>
-    <script src="https://use.fontawesome.com/releases/v5.15.4/js/all.js" data-mutate-approach="sync"></script>
+    <%= javascript_include_tag "fontawesome-all", "data-mutate-approach": "sync" %>
     <script>
       if ("serviceWorker" in navigator) {
         navigator.serviceWorker.register("/sw.js");
       }
     </script>
   </head>
-  <body class="<%= controller.controller_name %> <%= controller.action_name %>" data-theme="<%= theme_preference %>">
+  <body class="<%= controller.controller_name %> <%= controller.action_name %>" data-theme="<%= theme_preference %>" data-recent-stories="<%= recent_stories_json %>">
     <%= render "shared/theme" %>
     <%= render "shared/flash" %>
     <%= yield %>

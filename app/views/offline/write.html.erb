@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Draft</title>
+    <meta content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, interactive-widget=resizes-content" name="viewport" />
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <%= stylesheet_link_tag 'application', media: 'all' %>
+    <%= javascript_importmap_tags 'offline_write' %>
+  </head>
+  <body class="offline write" data-theme="light">
+    <div class="index-page offline-page page" data-offline-picker>
+      <div class="header">
+        <h3 class="title"></h3>
+      </div>
+      <div class="container">
+        <div class="offline-picker">
+          <p class="offline-message" data-offline-message>Draft can't reach home. Pick a story to start a new session. It will be saved when Draft can reach home.</p>
+          <div class="stories-list" data-offline-stories></div>
+        </div>
+      </div>
+    </div>
+    <template data-offline-compose>
+      <div class="edit-page page">
+        <div class="page" data-controller="compose">
+          <div class="header">
+            <h3 class="title">Write</h3>
+            <div class="header-actions">
+              <button type="button" class="header-action" data-offline-done>Done</button>
+            </div>
+          </div>
+          <div class="container">
+            <div class="compose">
+              <div class="text-container">
+                <div class="text" data-target="compose.textView">
+                  <div data-target="compose.savedText"></div>
+                  <div class="unsaved-paragraphs" data-target="compose.unsaved"></div>
+                  <p class="unsaved-note" data-target="compose.unsavedNote" hidden>Not saved yet. Will send when Draft can reach home.</p>
+                </div>
+              </div>
+              <div class="compose-container">
+                <form class="compose-form">
+                  <div class="field">
+                    <textarea id="composer" data-target="compose.text" data-action="keypress->compose#submit"></textarea>
+                  </div>
+                </form>
+              </div>
+              <div class="word-count" data-original-count="0" data-target="compose.count">0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+  </body>
+</html>
