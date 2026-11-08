@@ -36,6 +36,7 @@ class WritingSubmitSystemTest < ActionDispatch::SystemTestCase
         const text = document.querySelector('.edit-page .text');
         const header = document.querySelector('.edit-page .header');
         const frames = window.submitFrames;
+        document.body.dataset.saveFrames = 'true';
         frames.maxGap = Math.max(frames.maxGap, text.scrollHeight - text.clientHeight - text.scrollTop);
         frames.headerTops.push(Math.round(header.getBoundingClientRect().top + window.scrollY));
         requestAnimationFrame(record);
@@ -47,6 +48,8 @@ class WritingSubmitSystemTest < ActionDispatch::SystemTestCase
     within '.text-container' do
       assert_text 'A freshly written line'
     end
+    assert_no_selector '.unsaved'
+    assert_selector 'body[data-save-frames=true]'
 
     frames = evaluate_script('window.submitFrames')
     assert_operator frames['headerTops'].length, :>, 0, 'frames were recorded after the save'

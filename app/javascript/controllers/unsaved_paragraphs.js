@@ -1,6 +1,7 @@
-// Paragraphs stay on the phone until home confirms them saved. Each one is kept in
-// localStorage under its session with an id of its own, and sent one at a time, in order.
-// A paragraph whose reply was lost is sent again; the server knows its id and skips it.
+// Paragraphs stay in the browser queue until home confirms them saved. The queue normally
+// lives in localStorage; if storage fails, it remains in memory for the current page. Each
+// paragraph has its own id and is sent one at a time, in order. A paragraph whose reply was
+// lost is sent again; the server knows its id and skips it.
 // Sending resumes when the connection returns, when Draft comes back to the screen, when a
 // page loads, and on a slow timer.
 
@@ -155,4 +156,7 @@ document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "visible") sendUnsaved();
 });
 document.addEventListener("turbo:load", sendUnsaved);
+// On a full page load the module can be evaluated after turbo:load has already fired.
+// Start a round immediately so reopening Draft sends anything left from an earlier visit.
+sendUnsaved();
 setInterval(sendUnsaved, RETRY_INTERVAL_MS);

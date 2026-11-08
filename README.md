@@ -5,6 +5,17 @@ On first visit it creates a local user that owns your stories. If you point it
 at an existing database, it acts as the oldest account in it. When writing
 sessions exist, the home page links to the most recently updated one.
 
+## Writing when home is out of reach
+
+If the connection drops while an existing writing session is open, Draft keeps each
+submitted paragraph on the device until the home machine confirms it was saved. Waiting
+paragraphs appear faded with a “Not saved yet” note and send automatically after reconnecting
+or the next time the session is opened. Retries do not duplicate paragraphs; if the original
+session was deleted elsewhere, Draft puts the waiting paragraphs in a new session in the same
+story. Draft uses browser storage for this queue; if that storage is unavailable, waiting
+paragraphs remain queued only while the page stays open. Opening Draft or starting a session
+while disconnected is not supported.
+
 ## Running Locally
 
 Requires Ruby 3.3.8 (see `.tool-versions`; `mise install` or `asdf install`

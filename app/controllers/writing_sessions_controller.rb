@@ -107,7 +107,7 @@ class WritingSessionsController < ApplicationController
       true
     end
   rescue ActiveRecord::RecordNotUnique
-    use_applied_paragraph_session
+    applied_paragraph_session_recovered?
   end
 
   def append_with_paragraph_id(text)
@@ -121,14 +121,14 @@ class WritingSessionsController < ApplicationController
       true
     end
   rescue ActiveRecord::RecordNotUnique
-    use_applied_paragraph_session
+    applied_paragraph_session_recovered?
   end
 
   def remember_paragraph_id
     @writing_session.saved_paragraphs.create!(paragraph_id: params[:paragraph_id].to_s) if params[:paragraph_id].present?
   end
 
-  def use_applied_paragraph_session
+  def applied_paragraph_session_recovered?
     @writing_session = applied_paragraph_session
     raise unless @writing_session
 

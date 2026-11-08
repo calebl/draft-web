@@ -38,6 +38,24 @@ class UnsavedParagraphsSystemTest < ActionDispatch::SystemTestCase
     assert_equal 1, SavedParagraph.where(writing_session: session).count
   end
 
+  test 'A queued paragraph sends the next time the session is opened' do
+    session = writing_sessions(:one)
+    path = edit_story_writing_session_path(stories(:one), session)
+    visit path
+
+    go_offline
+    find('#composer').send_keys('Waiting until Draft opens again', :enter)
+    assert_selector '.text .unsaved', text: 'Waiting until Draft opens again'
+    visit 'about:blank'
+
+    go_online
+    visit path
+
+    assert_no_selector '.unsaved'
+    within('.text-container') { assert_text 'Waiting until Draft opens again' }
+    assert_equal 'MyText<div>Waiting until Draft opens again</div>', session.reload.text
+  end
+
   test 'A storage failure keeps the paragraph visible and sends it once with an id' do
     session = writing_sessions(:one)
     visit edit_story_writing_session_path(stories(:one), session)
@@ -73,8 +91,36 @@ class UnsavedParagraphsSystemTest < ActionDispatch::SystemTestCase
     JS
 
     assert_no_selector '.unsaved'
-    assert_equal '<div>Held in memory</div>', session.reload.text
+    assert_equal 'MyText<div>Held in memory</div>', session.reload.text
     assert_equal 1, SavedParagraph.where(writing_session: session, paragraph_id: request_body['paragraph_id']).count
+  end
+
+  test 'A paragraph is not duplicated when home saves it but the reply is lost' do
+    session = writing_sessions(:one)
+    visit edit_story_writing_session_path(stories(:one), session)
+
+    execute_script <<~JS
+      window.originalFetch = window.fetch;
+      window.loseFirstReply = true;
+      window.fetch = async function(url, options) {
+        const response = await window.originalFetch(url, options);
+        if (window.loseFirstReply) {
+          window.loseFirstReply = false;
+          throw new TypeError('Reply was lost');
+        }
+        return response;
+      };
+    JS
+
+    find('#composer').send_keys('Saved despite the lost reply', :enter)
+    assert_selector '.text .unsaved', text: 'Saved despite the lost reply'
+    assert_equal 'MyText<div>Saved despite the lost reply</div>', session.reload.text
+
+    execute_script('window.dispatchEvent(new Event("online"))')
+
+    assert_no_selector '.unsaved'
+    assert_equal 'MyText<div>Saved despite the lost reply</div>', session.reload.text
+    assert_equal 1, SavedParagraph.where(writing_session: session).count
   end
 
   test 'Paragraphs queued for a session deleted elsewhere land in a new session in the same story' do
