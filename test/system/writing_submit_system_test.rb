@@ -57,4 +57,65 @@ class WritingSubmitSystemTest < ActionDispatch::SystemTestCase
   ensure
     page.driver.browser.manage.window.resize_to(1400, 1400)
   end
+
+  test 'Submitting a short session with the keyboard open does not make the page jump' do
+    session = writing_sessions(:one)
+    session.update!(text: '<div>A short opening line.</div>')
+
+    page.driver.browser.manage.window.resize_to(375, 667)
+    visit edit_story_writing_session_path(stories(:one), session)
+    assert_text 'A short opening line.'
+    find('#composer').click
+
+    # Stand in for the iPhone keyboard (a 346px visible area) and for how iOS reveals a
+    # field focused while the keyboard is open: unless the focus asks not to scroll, it
+    # scrolls the page to centre the field in the visible area and only reports that
+    # scroll about 100ms later. Every frame records where the header sits in the visible
+    # area, so a jump that later settles still fails.
+    execute_script(<<~JS)
+      const fake = new EventTarget();
+      Object.assign(fake, {height: 346, pageTop: 0, offsetTop: 0});
+      Object.defineProperty(window, 'visualViewport', {configurable: true, get: () => fake});
+      const page = document.querySelector('[data-controller="compose"]');
+      const controller = window.Stimulus.getControllerForElementAndIdentifier(page, 'compose');
+      controller.disconnect();
+      controller.connect();
+
+      window.revealScrolls = 0;
+      const focus = HTMLElement.prototype.focus;
+      HTMLElement.prototype.focus = function(options) {
+        focus.call(this, options);
+        if (this.id !== 'composer' || options?.preventScroll) return;
+        const rect = this.getBoundingClientRect();
+        const target = Math.round(rect.top + window.scrollY - (fake.height - rect.height) / 2);
+        if (target === fake.pageTop) return;
+        window.revealScrolls += 1;
+        fake.pageTop = target;
+        setTimeout(() => fake.dispatchEvent(new Event('scroll')), 100);
+      };
+
+      window.headerTops = [];
+      const record = () => {
+        const header = document.querySelector('.edit-page .header');
+        window.headerTops.push(Math.round(header.getBoundingClientRect().top + window.scrollY - fake.pageTop));
+        requestAnimationFrame(record);
+      };
+      record();
+      document.addEventListener('turbo:load', () => {
+        setTimeout(() => document.documentElement.setAttribute('data-settled', ''), 400);
+      }, {once: true});
+    JS
+
+    find('#composer').send_keys('A second line', :enter)
+    within '.text-container' do
+      assert_text 'A second line'
+    end
+    assert_selector 'html[data-settled]', visible: :all
+
+    assert_equal [0], evaluate_script('window.headerTops').uniq, 'header stayed at the top of the visible area'
+    assert_equal 0, evaluate_script('window.revealScrolls'), 'the new composer was focused without scrolling'
+    assert evaluate_script("document.activeElement.id === 'composer'"), 'the new composer has focus'
+  ensure
+    page.driver.browser.manage.window.resize_to(1400, 1400)
+  end
 end
