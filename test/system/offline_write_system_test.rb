@@ -69,6 +69,65 @@ class OfflineWriteSystemTest < ActionDispatch::SystemTestCase
     assert_equal '<div>Written on the train</div><div>Then the tunnel</div>', session.reload.text
   end
 
+  test 'Reconnect keeps memory queued paragraphs and text still being typed' do
+    story = stories(:one)
+    visit root_path
+    wait_for_offline_page_stored
+
+    go_offline
+    visit story_path(story)
+    within('.story', text: 'Story title') { click_on 'Write' }
+
+    execute_script <<~JS
+      window.originalSetItem = Storage.prototype.setItem;
+      Storage.prototype.setItem = function() { throw new DOMException("Storage unavailable"); };
+    JS
+
+    composer = find('#composer')
+    composer.send_keys('Held only in memory', :enter)
+    composer.send_keys('Also held in memory', :enter)
+    composer.send_keys('Still being typed')
+
+    execute_script <<~JS
+      window.originalFetch = window.fetch;
+      window.fetch = function(url, options) {
+        document.body.dataset.offlinePostStarted = "true";
+        return new Promise(function(resolve) {
+          window.releaseOfflinePost = function() {
+            window.fetch = window.originalFetch;
+            resolve(window.originalFetch(url, options));
+          };
+        });
+      };
+    JS
+
+    go_online
+    execute_script('window.dispatchEvent(new Event("online"))')
+    assert_selector 'body[data-offline-post-started=true]', visible: :all
+    assert_equal 'Still being typed', composer.value
+    assert_equal true, evaluate_script('document.activeElement.id === "composer"')
+
+    assert_difference -> { story.writing_sessions.count }, 1 do
+      execute_script('window.releaseOfflinePost()')
+      assert_no_selector '.text .unsaved'
+    end
+
+    assert_equal 'Still being typed', composer.value
+    assert_equal true, evaluate_script('document.activeElement.id === "composer"')
+    within('.text-container') do
+      assert_text 'Held only in memory'
+      assert_text 'Also held in memory'
+    end
+
+    execute_script('Storage.prototype.setItem = window.originalSetItem')
+    composer.send_keys(:enter)
+    assert_current_path(%r{/stories/#{story.id}/writing_sessions/\d+/edit})
+
+    session = story.writing_sessions.order(:id).last
+    assert_equal '<div>Held only in memory</div><div>Also held in memory</div><div>Still being typed</div>', session.text
+    assert_equal 3, SavedParagraph.where(writing_session: session).count
+  end
+
   test 'Words written for a story deleted while away stay on the phone' do
     story = stories(:two)
     visit root_path

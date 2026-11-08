@@ -126,7 +126,7 @@ const sendSession = async (sessionId) => {
             const [, ...rest] = read(currentId);
             write(currentId, []);
             write(newId, [...read(newId), ...rest], memoryOnly);
-            announce(MOVED_EVENT, {from: currentId, to: newId, story: paragraph.story});
+            announce(MOVED_EVENT, {from: currentId, to: newId, story: paragraph.story, saved: paragraph.id});
             currentId = newId;
             continue;
         }
