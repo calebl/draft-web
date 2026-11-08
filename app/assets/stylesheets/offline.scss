@@ -1,0 +1,29 @@
+// The page Draft opens when it cannot reach home: the home page's story cards, then the
+// usual writing screen.
+.offline-page {
+  &[hidden] {
+    display: none;
+  }
+
+  .offline-picker {
+    width: 100%;
+    max-width: 400px;
+    padding: 0 16px;
+    box-sizing: border-box;
+  }
+
+  .offline-message {
+    color: gray;
+    margin: 0 0 16px;
+  }
+
+  // Each card has a single action, so it is not faded like the home page's Delete.
+  .stories-list .story a:last-child {
+    opacity: 1;
+  }
+
+  .offline-waiting {
+    color: gray;
+    margin: 0 0 8px;
+  }
+}

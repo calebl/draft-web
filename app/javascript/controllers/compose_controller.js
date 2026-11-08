@@ -109,7 +109,7 @@ export default class extends Controller {
         // Everything is home: show the saved session as home has it, unless a paragraph is
         // being typed, which a refresh would clear.
         if (saved && this.unsavedTarget.childElementCount === 0 && this.textTarget.value === "") {
-            window.Turbo.visit(window.location.href, {action: "replace"});
+            visit(window.location.href);
         }
     }
 
@@ -117,7 +117,7 @@ export default class extends Controller {
     handleUnsavedMoved(event) {
         if (event.detail.from !== this.sessionId) return;
 
-        window.Turbo.visit(`/stories/${event.detail.story}/writing_sessions/${event.detail.to}/edit`, {action: "replace"});
+        visit(`/stories/${event.detail.story}/writing_sessions/${event.detail.to}/edit`);
     }
 
     submit(event) {
@@ -139,5 +139,11 @@ export default class extends Controller {
         }
     }
 }
+
+// The offline writing page runs without Turbo.
+const visit = (url) => {
+    if (window.Turbo) window.Turbo.visit(url, {action: "replace"});
+    else window.location.replace(url);
+};
 
 const countWords = (text) => text.split(/\s+/).filter(Boolean).length;

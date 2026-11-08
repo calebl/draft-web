@@ -4,11 +4,14 @@
 // lost is sent again; the server knows its id and skips it.
 // Sending resumes when the connection returns, when Draft comes back to the screen, when a
 // page loads, and on a slow timer.
+// A session started while home was out of reach has a temporary id. Its first paragraph
+// creates the session; the rest follow as for any other session.
 
 const KEY_PREFIX = "draft.unsaved.";
 const RETRY_INTERVAL_MS = 30000;
 export const CHANGED_EVENT = "draft:unsaved-changed";
 export const MOVED_EVENT = "draft:unsaved-moved";
+export const OFFLINE_PREFIX = "offline-";
 
 let sending = false;
 const memoryQueues = new Map();
@@ -71,6 +74,14 @@ const announce = (name, detail) => window.dispatchEvent(new CustomEvent(name, {d
 
 export const unsavedParagraphs = (sessionId) => read(sessionId);
 
+export const offlineSessionId = () => `${OFFLINE_PREFIX}${paragraphId()}`;
+
+// Every session with paragraphs waiting, with its story and how many are waiting.
+export const unsavedSessions = () => sessionIds()
+    .map((sessionId) => ({sessionId, paragraphs: read(sessionId)}))
+    .filter(({paragraphs}) => paragraphs.length)
+    .map(({sessionId, paragraphs}) => ({sessionId, storyId: paragraphs[0].story, count: paragraphs.length}));
+
 export const queueParagraph = (storyId, sessionId, text) => {
     const paragraphs = read(sessionId);
     paragraphs.push({id: paragraphId(), story: String(storyId), text});
@@ -100,10 +111,13 @@ const sendSession = async (sessionId) => {
         if (!paragraph) return;
 
         const base = `/stories/${paragraph.story}/writing_sessions`;
-        let response = await send(`${base}/${currentId}.json`, "PATCH", paragraph);
+        const startedOffline = currentId.startsWith(OFFLINE_PREFIX);
+        let response = startedOffline ? null : await send(`${base}/${currentId}.json`, "PATCH", paragraph);
 
-        // The session was deleted elsewhere: keep the words in a new session in the same story.
-        if (response.status === 404) {
+        // The session was started while away, or deleted elsewhere: the first paragraph
+        // creates a session in the same story. If the story itself is gone, the words stay
+        // queued on the phone.
+        if (startedOffline || response.status === 404) {
             response = await send(`${base}.json`, "POST", paragraph);
             if (!response.ok) return;
             const {id} = await response.json();

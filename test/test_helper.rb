@@ -24,6 +24,28 @@ module LocalUserOverride
 end
 User.singleton_class.prepend(LocalUserOverride)
 
+# Lets a system test cut the browser off from home entirely: while it is on, every request,
+# including those from the service worker, has its connection dropped without a reply.
+class HomeOutOfReach
+  mattr_accessor :on, default: false
+
+  def initialize(app)
+    @app = app
+  end
+
+  def call(env)
+    return @app.call(env) unless on && env['rack.hijack']
+
+    env['rack.hijack'].call
+    env['rack.hijack_io'].close
+    [200, {}, []]
+  end
+end
+
+# Loading system tests sets the app the test server runs; wrap it afterwards.
+require 'action_dispatch/system_test_case'
+Capybara.app = HomeOutOfReach.new(Capybara.app)
+
 module ActiveSupport
   class TestCase
     # Run tests in parallel with specified workers
