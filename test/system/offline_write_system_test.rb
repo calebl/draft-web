@@ -1,5 +1,6 @@
 require 'test_helper'
 
+# rubocop:disable Metrics/ClassLength
 class OfflineWriteSystemTest < ActionDispatch::SystemTestCase
   driven_by :selenium, using: :headless_chrome
 
@@ -191,3 +192,4 @@ class OfflineWriteSystemTest < ActionDispatch::SystemTestCase
     page.driver.browser.network_conditions = { offline: false, latency: 0, throughput: -1 }
   end
 end
+# rubocop:enable Metrics/ClassLength
