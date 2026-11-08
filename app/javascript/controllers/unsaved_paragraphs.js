@@ -10,36 +10,53 @@ export const CHANGED_EVENT = "draft:unsaved-changed";
 export const MOVED_EVENT = "draft:unsaved-moved";
 
 let sending = false;
+const memoryQueues = new Map();
 
 const keyFor = (sessionId) => `${KEY_PREFIX}${sessionId}`;
 
 const read = (sessionId) => {
+    const id = String(sessionId);
+    if (memoryQueues.has(id)) return memoryQueues.get(id);
+
     try {
-        return JSON.parse(localStorage.getItem(keyFor(sessionId))) || [];
+        return JSON.parse(localStorage.getItem(keyFor(id))) || [];
     } catch {
         return [];
     }
 };
 
-const write = (sessionId, paragraphs) => {
-    if (paragraphs.length) {
-        localStorage.setItem(keyFor(sessionId), JSON.stringify(paragraphs));
-    } else {
-        localStorage.removeItem(keyFor(sessionId));
+const write = (sessionId, paragraphs, memoryOnly = memoryQueues.has(String(sessionId))) => {
+    const id = String(sessionId);
+    if (memoryOnly) {
+        if (paragraphs.length) memoryQueues.set(id, paragraphs);
+        else memoryQueues.delete(id);
+        return;
+    }
+
+    try {
+        if (paragraphs.length) {
+            localStorage.setItem(keyFor(id), JSON.stringify(paragraphs));
+        } else {
+            localStorage.removeItem(keyFor(id));
+        }
+    } catch {
+        if (paragraphs.length) memoryQueues.set(id, paragraphs);
     }
 };
 
 const sessionIds = () => {
-    const ids = [];
+    const ids = new Set([...memoryQueues.entries()]
+        .filter(([, paragraphs]) => paragraphs.length)
+        .map(([sessionId]) => sessionId));
     try {
         for (let i = 0; i < localStorage.length; i += 1) {
             const key = localStorage.key(i);
-            if (key?.startsWith(KEY_PREFIX)) ids.push(key.slice(KEY_PREFIX.length));
+            if (key?.startsWith(KEY_PREFIX)) ids.add(key.slice(KEY_PREFIX.length));
         }
     } catch {
-        // Storage unavailable: nothing is queued.
+        // In-memory paragraphs are still available when storage is not.
     }
-    return ids;
+    return [...ids];
 };
 
 // crypto.randomUUID only exists on secure pages, and home may be reached over plain http.
@@ -53,7 +70,6 @@ const announce = (name, detail) => window.dispatchEvent(new CustomEvent(name, {d
 
 export const unsavedParagraphs = (sessionId) => read(sessionId);
 
-// Throws when the phone cannot store the paragraph, so the caller can keep it in the composer.
 export const queueParagraph = (storyId, sessionId, text) => {
     const paragraphs = read(sessionId);
     paragraphs.push({id: paragraphId(), story: String(storyId), text});
@@ -91,9 +107,10 @@ const sendSession = async (sessionId) => {
             if (!response.ok) return;
             const {id} = await response.json();
             const newId = String(id);
+            const memoryOnly = memoryQueues.has(currentId);
             const [, ...rest] = read(currentId);
             write(currentId, []);
-            write(newId, [...read(newId), ...rest]);
+            write(newId, [...read(newId), ...rest], memoryOnly);
             announce(MOVED_EVENT, {from: currentId, to: newId, story: paragraph.story});
             currentId = newId;
             continue;

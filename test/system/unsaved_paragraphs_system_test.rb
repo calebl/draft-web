@@ -38,6 +38,45 @@ class UnsavedParagraphsSystemTest < ActionDispatch::SystemTestCase
     assert_equal 1, SavedParagraph.where(writing_session: session).count
   end
 
+  test 'A storage failure keeps the paragraph visible and sends it once with an id' do
+    session = writing_sessions(:one)
+    visit edit_story_writing_session_path(stories(:one), session)
+
+    execute_script <<~JS
+      window.originalSetItem = Storage.prototype.setItem;
+      Storage.prototype.setItem = function() { throw new DOMException("Storage unavailable"); };
+      window.originalFetch = window.fetch;
+      window.paragraphRequests = [];
+      window.fetch = function(url, options) {
+        window.paragraphRequests.push({url: String(url), options: options});
+        return new Promise(function(resolve) {
+          window.releaseParagraphRequest = function() {
+            window.fetch = window.originalFetch;
+            resolve(window.originalFetch(url, options));
+          };
+        });
+      };
+    JS
+
+    find('#composer').send_keys('Held in memory', :enter)
+
+    assert_selector '.text .unsaved', text: 'Held in memory'
+    assert_selector '.unsaved-note', text: 'Not saved yet. Will send when Draft can reach home.'
+    assert_equal 1, evaluate_script('window.paragraphRequests.length')
+    request_body = JSON.parse(evaluate_script('window.paragraphRequests[0].options.body'))
+    assert_equal 'Held in memory', request_body.dig('writing_session', 'text')
+    assert_predicate request_body['paragraph_id'], :present?
+
+    execute_script <<~JS
+      Storage.prototype.setItem = window.originalSetItem;
+      window.releaseParagraphRequest();
+    JS
+
+    assert_no_selector '.unsaved'
+    assert_equal '<div>Held in memory</div>', session.reload.text
+    assert_equal 1, SavedParagraph.where(writing_session: session, paragraph_id: request_body['paragraph_id']).count
+  end
+
   test 'Paragraphs queued for a session deleted elsewhere land in a new session in the same story' do
     story = stories(:one)
     session = writing_sessions(:one)

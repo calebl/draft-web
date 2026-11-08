@@ -130,13 +130,7 @@ export default class extends Controller {
 
             if (textTarget.value === "") return;
 
-            try {
-                queueParagraph(this.element.dataset.storyId, this.sessionId, textTarget.value);
-            } catch {
-                // The phone could not keep it: send it straight away as before.
-                $(document).find(event.target).closest('form').find("input[type=submit]").trigger("click");
-                return;
-            }
+            queueParagraph(this.element.dataset.storyId, this.sessionId, textTarget.value);
             textTarget.value = "";
             this.renderUnsaved();
             this.scrollToBottom();

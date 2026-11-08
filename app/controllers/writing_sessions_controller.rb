@@ -57,11 +57,10 @@ class WritingSessionsController < ApplicationController
     # A paragraph sent again because its reply never reached the phone is not added twice.
     return render(json: applied_paragraph_session, status: :ok) if applied_paragraph_session
 
-    @writing_session.text += "<div>#{writing_session_params[:text]}</div>"
-    @writing_session.word_count = @writing_session.calculate_word_count
+    text = writing_session_params[:text]
 
     respond_to do |format|
-      if save_with_paragraph_id
+      if append_with_paragraph_id(text)
         format.html { redirect_to edit_story_writing_session_path(@story, @writing_session.id), status: :see_other }
         format.json { render json: @writing_session, status: :ok }
       else
@@ -104,11 +103,35 @@ class WritingSessionsController < ApplicationController
     WritingSession.transaction do
       next false unless @writing_session.save
 
-      @writing_session.saved_paragraphs.create!(paragraph_id: params[:paragraph_id].to_s) if params[:paragraph_id].present?
+      remember_paragraph_id
       true
     end
   rescue ActiveRecord::RecordNotUnique
-    @writing_session = SavedParagraph.find_by!(paragraph_id: params[:paragraph_id].to_s).writing_session
+    use_applied_paragraph_session
+  end
+
+  def append_with_paragraph_id(text)
+    WritingSession.transaction do
+      @writing_session.lock!
+      @writing_session.text += "<div>#{text}</div>"
+      @writing_session.word_count = @writing_session.calculate_word_count
+      next false unless @writing_session.save
+
+      remember_paragraph_id
+      true
+    end
+  rescue ActiveRecord::RecordNotUnique
+    use_applied_paragraph_session
+  end
+
+  def remember_paragraph_id
+    @writing_session.saved_paragraphs.create!(paragraph_id: params[:paragraph_id].to_s) if params[:paragraph_id].present?
+  end
+
+  def use_applied_paragraph_session
+    @writing_session = applied_paragraph_session
+    raise unless @writing_session
+
     true
   end
 
