@@ -13,6 +13,10 @@ export default class extends Controller {
         this.fitToVisibleViewport();
         this.scrollToBottom();
         this.isAtBottom = true;
+        // Saving swaps in a new composer while the keyboard is still open. Focus it without
+        // scrolling: an iPhone otherwise scrolls the page to centre the newly focused field,
+        // and the whole writing screen jumps up until it is pinned back to the visible area.
+        this.textTarget.focus({preventScroll: true});
         this.textViewTarget.addEventListener("scroll", this.handleScroll);
         window.addEventListener("resize", this.handleViewportResize);
         window.visualViewport?.addEventListener("resize", this.handleViewportResize);
