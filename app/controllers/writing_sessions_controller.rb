@@ -27,6 +27,10 @@ class WritingSessionsController < ApplicationController
   # POST /writing_sessions
   # POST /writing_sessions.json
   def create
+    # The phone recreates a session deleted elsewhere by sending its unsaved paragraph
+    # here; if that already happened and only the reply was lost, answer with that session.
+    return render(json: applied_paragraph_session, status: :ok) if applied_paragraph_session
+
     # New Session and Write post no text: they start an empty session.
     text = params.key?(:writing_session) ? "<div>#{writing_session_params[:text]}</div>" : ''
 
@@ -34,7 +38,7 @@ class WritingSessionsController < ApplicationController
     @writing_session.word_count = @writing_session.calculate_word_count
 
     respond_to do |format|
-      if @writing_session.save
+      if save_with_paragraph_id
         format.html do
           redirect_to edit_story_writing_session_path(@story, @writing_session.id),
                       status: :see_other
@@ -50,11 +54,13 @@ class WritingSessionsController < ApplicationController
   # PATCH/PUT /writing_sessions/1
   # PATCH/PUT /writing_sessions/1.json
   def update
-    @writing_session.text += "<div>#{writing_session_params[:text]}</div>"
-    @writing_session.word_count = @writing_session.calculate_word_count
+    # A paragraph sent again because its reply never reached the phone is not added twice.
+    return render(json: applied_paragraph_session, status: :ok) if applied_paragraph_session
+
+    text = writing_session_params[:text]
 
     respond_to do |format|
-      if @writing_session.save
+      if append_with_paragraph_id(text)
         format.html { redirect_to edit_story_writing_session_path(@story, @writing_session.id), status: :see_other }
         format.json { render json: @writing_session, status: :ok }
       else
@@ -79,6 +85,54 @@ class WritingSessionsController < ApplicationController
   # Deleting from the all-sessions list returns there instead of the story page.
   def after_destroy_path
     params[:show_all].present? ? story_writing_sessions_path(@story) : story_path(@story)
+  end
+
+  # The session that already holds the paragraph with this id, when it was applied before.
+  def applied_paragraph_session
+    return if params[:paragraph_id].blank?
+
+    @applied_paragraph_session ||=
+      SavedParagraph.joins(:writing_session)
+                    .find_by(paragraph_id: params[:paragraph_id].to_s,
+                             writing_sessions: { user_id: current_user.id })&.writing_session
+  end
+
+  # Save the session and, when the phone sent a paragraph id, remember it in the same
+  # transaction. Two copies of one paragraph racing in keep only the first.
+  def save_with_paragraph_id
+    WritingSession.transaction do
+      next false unless @writing_session.save
+
+      remember_paragraph_id
+      true
+    end
+  rescue ActiveRecord::RecordNotUnique
+    applied_paragraph_session_recovered?
+  end
+
+  def append_with_paragraph_id(text)
+    WritingSession.transaction do
+      @writing_session.lock!
+      @writing_session.text += "<div>#{text}</div>"
+      @writing_session.word_count = @writing_session.calculate_word_count
+      next false unless @writing_session.save
+
+      remember_paragraph_id
+      true
+    end
+  rescue ActiveRecord::RecordNotUnique
+    applied_paragraph_session_recovered?
+  end
+
+  def remember_paragraph_id
+    @writing_session.saved_paragraphs.create!(paragraph_id: params[:paragraph_id].to_s) if params[:paragraph_id].present?
+  end
+
+  def applied_paragraph_session_recovered?
+    @writing_session = applied_paragraph_session
+    raise unless @writing_session
+
+    true
   end
 
   # Only allow a list of trusted parameters through.

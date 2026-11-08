@@ -2,7 +2,7 @@
   <%# Saving redirects back to this page; keep the scroll position instead of jumping to the top. %>
   <meta name="turbo-refresh-scroll" content="preserve">
 <% end %>
-<div class="page" data-controller='compose'>
+<div class="page" data-controller='compose' data-story-id="<%= story.id %>" data-session-id="<%= session.id %>">
   <div class="header">
     <h3 class="title">Write</h3>
     <div class="header-actions" data-target="compose.headerActions">
@@ -16,9 +16,12 @@
     <div class="compose">
       <div class='text-container'>
         <div class="text" data-target="compose.textView">
-          <turbo-frame id="session-text">
+          <turbo-frame id="session-text" data-target="compose.savedText">
             <%= session.text.present? ? session.text.html_safe : '' %>
           </turbo-frame>
+          <%# Paragraphs still on the phone, waiting for home to confirm them saved. %>
+          <div class="unsaved-paragraphs" data-target="compose.unsaved"></div>
+          <p class="unsaved-note" data-target="compose.unsavedNote" hidden>Not saved yet. Will send when Draft can reach home.</p>
         </div>
       </div>
       <div class="compose-container">
