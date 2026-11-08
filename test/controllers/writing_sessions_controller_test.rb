@@ -54,6 +54,37 @@ class WritingSessionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :see_other
   end
 
+  test 'a paragraph sent again with the same id is saved once' do
+    paragraph = { writing_session: { text: 'Sent from the phone' }, paragraph_id: 'para-1' }
+
+    2.times do
+      patch story_writing_session_url(@story, @writing_session, format: :json), params: paragraph, as: :json
+      assert_response :ok
+      assert_equal @writing_session.id, response.parsed_body['id']
+    end
+
+    assert_equal 'MyText<div>Sent from the phone</div>', @writing_session.reload.text
+    assert_equal 1, SavedParagraph.where(paragraph_id: 'para-1').count
+  end
+
+  test 'a paragraph for a session deleted elsewhere starts a new session in the story, once' do
+    @writing_session.destroy
+    paragraph = { writing_session: { text: 'Written before the delete' }, paragraph_id: 'para-2' }
+
+    patch story_writing_session_url(@story, @writing_session, format: :json), params: paragraph, as: :json
+    assert_response :not_found
+
+    assert_difference('@story.writing_sessions.count', 1) do
+      2.times do
+        post story_writing_sessions_url(@story, format: :json), params: paragraph, as: :json
+        assert_response :ok
+      end
+    end
+    created = @story.writing_sessions.last
+    assert_equal '<div>Written before the delete</div>', created.text
+    assert_equal created.id, response.parsed_body['id']
+  end
+
   test 'update without session parameters is rejected' do
     original_text = @writing_session.text
 
