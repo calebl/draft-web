@@ -2,6 +2,9 @@ import { Controller } from "@hotwired/stimulus";
 import $ from "jquery";
 import {CHANGED_EVENT, MOVED_EVENT, queueParagraph, sendUnsaved, unsavedParagraphs} from "controllers/unsaved_paragraphs";
 
+// Matches the fade of a paragraph still waiting (sessions/edit.scss).
+const UNSAVED_NOTE_DELAY_MS = 600;
+
 export default class extends Controller {
     static targets = ["text", "count", "textView", "form", "headerActions", "unsaved", "unsavedNote", "savedText"];
 
@@ -31,6 +34,8 @@ export default class extends Controller {
     }
 
     disconnect() {
+        clearTimeout(this.noteTimer);
+        this.noteTimer = null;
         window.removeEventListener(CHANGED_EVENT, this.handleUnsavedChanged);
         window.removeEventListener(MOVED_EVENT, this.handleUnsavedMoved);
         this.textViewTarget.removeEventListener("scroll", this.handleScroll);
@@ -80,8 +85,25 @@ export default class extends Controller {
             div.textContent = paragraph.text;
             return div;
         }));
-        this.unsavedNoteTarget.hidden = paragraphs.length === 0;
+        this.updateUnsavedNote(paragraphs.length > 0);
         this.updateCount();
+    }
+
+    // The note waits a moment, so a save that comes straight back never shows it. It takes
+    // room under the text, and showing it only to hide it again would push the text up and
+    // drop it straight back down.
+    updateUnsavedNote(waiting) {
+        if (!waiting) {
+            clearTimeout(this.noteTimer);
+            this.noteTimer = null;
+            this.unsavedNoteTarget.hidden = true;
+        } else if (this.unsavedNoteTarget.hidden && !this.noteTimer) {
+            this.noteTimer = setTimeout(() => {
+                this.noteTimer = null;
+                this.unsavedNoteTarget.hidden = false;
+                if (this.isAtBottom) this.scrollToBottom();
+            }, UNSAVED_NOTE_DELAY_MS);
+        }
     }
 
     // The count includes paragraphs not saved yet and the one being typed.

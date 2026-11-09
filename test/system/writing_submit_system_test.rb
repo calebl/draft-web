@@ -121,4 +121,52 @@ class WritingSubmitSystemTest < ActionDispatch::SystemTestCase
   ensure
     page.driver.browser.manage.window.resize_to(1400, 1400)
   end
+
+  test 'Saving lines one after another in a short session only ever moves the text up' do
+    session = writing_sessions(:one)
+    session.update!(text: '<div>A short opening line.</div><div>A second short line.</div>')
+
+    page.driver.browser.manage.window.resize_to(375, 520)
+    visit edit_story_writing_session_path(stories(:one), session)
+    assert_text 'A second short line.'
+    find('#composer').click
+
+    # The keyboard leaves a 346px visible area. The text sits just above the composer, so
+    # each saved line pushes it up. Every frame records where the first line sits in the
+    # visible area: it must never come back down, including once a save comes straight
+    # back and the page is refreshed.
+    execute_script(<<~JS)
+      const fake = new EventTarget();
+      Object.assign(fake, {height: 346, pageTop: 0, offsetTop: 0});
+      Object.defineProperty(window, 'visualViewport', {configurable: true, get: () => fake});
+      const page = document.querySelector('[data-controller="compose"]');
+      const controller = window.Stimulus.getControllerForElementAndIdentifier(page, 'compose');
+      controller.disconnect();
+      controller.connect();
+
+      window.firstLineTops = [];
+      const record = () => {
+        const first = document.querySelector('#session-text div');
+        window.firstLineTops.push(Math.round(first.getBoundingClientRect().top + window.scrollY - fake.pageTop));
+        requestAnimationFrame(record);
+      };
+      record();
+      window.loads = 0;
+      document.addEventListener('turbo:load', () => { document.documentElement.dataset.loads = ++window.loads; });
+    JS
+
+    ['A third line', 'A fourth line', 'A fifth line that is long enough to wrap onto another row'].each_with_index do |line, index|
+      find('#composer').send_keys(line, :enter)
+      assert_selector "html[data-loads='#{index + 1}']", visible: :all
+      within('#session-text') { assert_text line }
+    end
+    sleep 0.7
+
+    tops = evaluate_script('window.firstLineTops')
+    drops = tops.each_cons(2).map { |before, after| after - before }.select(&:positive?)
+    assert_empty drops, 'the text never moved back down'
+    assert_operator tops.first - tops.last, :>, 0, 'saved lines pushed the text up'
+  ensure
+    page.driver.browser.manage.window.resize_to(1400, 1400)
+  end
 end

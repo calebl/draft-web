@@ -65,7 +65,8 @@ html:has(.edit-page, .new-page), html:has(.edit-page, .new-page) body {
           box-sizing: border-box;
 
           // Paragraphs still on the phone. The fade waits a moment so a save that comes
-          // straight back never flickers.
+          // straight back never flickers; the note under them waits as long (compose
+          // controller).
           .unsaved {
             animation: unsaved-fade 0s 0.6s forwards;
           }
@@ -74,8 +75,6 @@ html:has(.edit-page, .new-page), html:has(.edit-page, .new-page) body {
             margin: 8px 0 0;
             color: gray;
             font-size: 14px;
-            opacity: 0;
-            animation: unsaved-fade-in 0s 0.6s forwards;
           }
         }
       }
@@ -105,8 +104,4 @@ html:has(.edit-page, .new-page), html:has(.edit-page, .new-page) body {
 
 @keyframes unsaved-fade {
   to { opacity: 0.5; }
-}
-
-@keyframes unsaved-fade-in {
-  to { opacity: 1; }
 }
