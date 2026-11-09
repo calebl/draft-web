@@ -1,6 +1,13 @@
 @import "./variables.scss";
 @import "./mixins.scss";
 
+// Inline icons sit on the text line the way Font Awesome's did.
+.icon {
+  display: inline-block;
+  overflow: visible;
+  vertical-align: -0.125em;
+}
+
 body {
   font-family: Roboto, sans-serif;
   font-size: 14px;

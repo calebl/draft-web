@@ -6,6 +6,6 @@
     <%= text.present? ? text.html_safe : '' %>
   </div>
   <button class="copy-button" data-text-target="copy" data-action="click->text#copy" href="">
-    <i class="far fa-copy"></i>&nbsp;<span data-text-target="copied">text copied!</span>
+    <%= icon 'copy' %>&nbsp;<span data-text-target="copied">text copied!</span>
   </button>
 </div>

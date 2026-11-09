@@ -21,6 +21,13 @@ class HomeTest < ActionDispatch::IntegrationTest
     assert_select 'meta[name="pocket-kit-replay"][data-show-typed-text="false"]', count: 1
   end
 
+  test 'home page draws its icons inline instead of loading an icon script' do
+    get root_path
+
+    assert_select '[data-theme-icon] svg.icon', count: 3
+    assert_select 'script[src*="fontawesome"]', count: 0
+  end
+
   test 'blazer route gives access denied for non admin' do
     act_as users(:bob)
 
