@@ -4,6 +4,9 @@
 // lost is sent again; the server knows its id and skips it.
 // Sending resumes when the connection returns, when Draft comes back to the screen, when a
 // page loads, and on a slow timer.
+// A paragraph home answered with an error is marked, so the page can say home had a problem
+// instead of blaming the connection. One home refused outright (a 4xx) is not sent again;
+// its words stay on the phone. One that met a server error (a 5xx) is tried again later.
 // A session started while home was out of reach has a temporary id. Its first paragraph
 // creates the session; the rest follow as for any other session.
 
@@ -12,6 +15,8 @@ const RETRY_INTERVAL_MS = 30000;
 export const CHANGED_EVENT = "draft:unsaved-changed";
 export const MOVED_EVENT = "draft:unsaved-moved";
 export const OFFLINE_PREFIX = "offline-";
+export const REJECTED = "rejected";
+export const SERVER_ERROR = "server-error";
 
 let sending = false;
 const memoryQueues = new Map();
@@ -80,7 +85,15 @@ export const offlineSessionId = () => `${OFFLINE_PREFIX}${paragraphId()}`;
 export const unsavedSessions = () => sessionIds()
     .map((sessionId) => ({sessionId, paragraphs: read(sessionId)}))
     .filter(({paragraphs}) => paragraphs.length)
-    .map(({sessionId, paragraphs}) => ({sessionId, storyId: paragraphs[0].story, count: paragraphs.length}));
+    .map(({sessionId, paragraphs}) => ({
+        sessionId,
+        storyId: paragraphs[0].story,
+        count: paragraphs.length,
+        rejected: paragraphs[0].problem === REJECTED
+    }));
+
+// Why the first waiting paragraph has not been saved, if home answered with an error.
+export const unsavedProblem = (sessionId) => read(sessionId)[0]?.problem || null;
 
 export const queueParagraph = (storyId, sessionId, text) => {
     const paragraphs = read(sessionId);
@@ -102,13 +115,22 @@ const send = (url, method, paragraph) => fetch(url, {
     body: JSON.stringify({writing_session: {text: paragraph.text}, paragraph_id: paragraph.id})
 });
 
+// Home answered with an error. The words stay queued; a refusal stops further tries.
+const markProblem = (sessionId, paragraph, response) => {
+    const problem = response.status < 500 ? REJECTED : SERVER_ERROR;
+    if (paragraph.problem === problem) return;
+    write(sessionId, read(sessionId).map((queued) =>
+        queued.id === paragraph.id ? {...queued, problem} : queued));
+    announce(CHANGED_EVENT, {sessionId});
+};
+
 // Sends one session's paragraphs in order. Stops at the first that does not get through,
 // so nothing is saved out of order; it is tried again later.
 const sendSession = async (sessionId) => {
     let currentId = sessionId;
     for (;;) {
         const [paragraph] = read(currentId);
-        if (!paragraph) return;
+        if (!paragraph || paragraph.problem === REJECTED) return;
 
         const base = `/stories/${paragraph.story}/writing_sessions`;
         const startedOffline = currentId.startsWith(OFFLINE_PREFIX);
@@ -119,7 +141,10 @@ const sendSession = async (sessionId) => {
         // queued on the phone.
         if (startedOffline || response.status === 404) {
             response = await send(`${base}.json`, "POST", paragraph);
-            if (!response.ok) return;
+            if (!response.ok) {
+                markProblem(currentId, paragraph, response);
+                return;
+            }
             const {id} = await response.json();
             const newId = String(id);
             const memoryOnly = memoryQueues.has(currentId);
@@ -131,7 +156,10 @@ const sendSession = async (sessionId) => {
             continue;
         }
 
-        if (!response.ok) return;
+        if (!response.ok) {
+            markProblem(currentId, paragraph, response);
+            return;
+        }
 
         const remaining = read(currentId).filter((queued) => queued.id !== paragraph.id);
         write(currentId, remaining);

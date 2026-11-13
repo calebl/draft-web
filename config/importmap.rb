@@ -5,6 +5,7 @@
 pin 'application', preload: true
 pin 'offline_write'
 pin 'recent_stories', preload: true
+pin 'offline_new_session', preload: true
 pin '@hotwired/turbo-rails', to: '@hotwired--turbo-rails.js', preload: true # @8.0.16
 pin '@rails/actioncable', to: '@rails--actioncable.js', preload: true # @7.1.3
 pin '@rails/activestorage', to: '@rails--activestorage.js', preload: true # @7.1.3

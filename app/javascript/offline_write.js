@@ -74,11 +74,13 @@ const plural = (count, word) => `${count} ${word}${count === 1 ? "" : "s"}`;
 const renderPicker = () => {
     const waiting = unsavedSessions()
         .filter(({sessionId}) => sessionId.startsWith(OFFLINE_PREFIX))
-        .map(({sessionId, storyId, count}) => storyCard(
+        .map(({sessionId, storyId, count, rejected}) => storyCard(
             storyTitle(storyId),
             "Keep writing",
             () => openSession(storyId, sessionId),
-            `${plural(count, "paragraph")} not saved yet`
+            rejected
+                ? "Home couldn't save this"
+                : `${plural(count, "paragraph")} not saved yet`
         ));
     const stories = readStored(STORIES_KEY, [])
         .map(({id, title}) => storyCard(title, "Write", () => openSession(id, offlineSessionId())));
@@ -111,6 +113,10 @@ function openSession(storyId, sessionId) {
 
 applyTheme();
 renderPicker();
+
+// New Session or Write sent here from a story: start that story's session straight away.
+const pickedStory = new URLSearchParams(window.location.search).get("story");
+if (pickedStory && /^\d+$/.test(pickedStory)) openSession(pickedStory, offlineSessionId());
 window.addEventListener(CHANGED_EVENT, () => { if (!openPage) renderPicker(); });
 window.addEventListener(MOVED_EVENT, () => { if (!openPage) renderPicker(); });
 
