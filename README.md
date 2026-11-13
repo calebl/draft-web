@@ -11,13 +11,15 @@ Draft keeps each submitted paragraph on the device until the home machine confir
 saved. Waiting paragraphs appear faded with a “Not saved yet” note and send automatically
 after reconnecting or the next time the session is opened. Retries do not duplicate
 paragraphs; if the original session was deleted elsewhere, Draft puts the waiting paragraphs
-in a new session in the same story.
+in a new session in the same story. If home refuses a save, Draft says so and keeps the words
+on the device without retrying; server errors are identified separately and retried later.
 
 After Draft has loaded online, it can also open while the home machine is out of reach. The
 offline page offers the five most recently updated stories so you can start a new writing
-session; it does not provide old sessions or outlines. The new session is created normally
-when Draft reconnects. Draft uses browser storage for waiting paragraphs; if that storage is
-unavailable, they remain queued only while the page stays open.
+session; it does not provide old sessions or outlines. New Session and Write on an already
+loaded page open the selected story directly. The new session is created normally when Draft
+reconnects. Draft uses browser storage for waiting paragraphs; if that storage is unavailable,
+they remain queued only while the page stays open.
 
 ## Running Locally
 
