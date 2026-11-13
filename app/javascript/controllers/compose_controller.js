@@ -1,9 +1,18 @@
 import { Controller } from "@hotwired/stimulus";
 import $ from "jquery";
-import {CHANGED_EVENT, MOVED_EVENT, queueParagraph, sendUnsaved, unsavedParagraphs} from "controllers/unsaved_paragraphs";
+import {
+    CHANGED_EVENT, MOVED_EVENT, REJECTED, SERVER_ERROR,
+    queueParagraph, sendUnsaved, unsavedParagraphs, unsavedProblem
+} from "controllers/unsaved_paragraphs";
 
 // Matches the fade of a paragraph still waiting (sessions/edit.scss).
 const UNSAVED_NOTE_DELAY_MS = 600;
+
+// When home answered with an error, the connection is not to blame.
+const UNSAVED_NOTES = {
+    [REJECTED]: "Home couldn't save this. The words are kept on this phone.",
+    [SERVER_ERROR]: "Home couldn't save this yet. Will try again."
+};
 
 export default class extends Controller {
     static targets = ["text", "count", "textView", "form", "headerActions", "unsaved", "unsavedNote", "savedText"];
@@ -85,8 +94,15 @@ export default class extends Controller {
             div.textContent = paragraph.text;
             return div;
         }));
+        this.unsavedNoteTarget.textContent = UNSAVED_NOTES[unsavedProblem(this.sessionId)] || this.waitingNote;
         this.updateUnsavedNote(paragraphs.length > 0);
         this.updateCount();
+    }
+
+    // The page's own note, shown while the paragraphs wait for the connection.
+    get waitingNote() {
+        this.originalNote ??= this.unsavedNoteTarget.textContent;
+        return this.originalNote;
     }
 
     // The note waits a moment, so a save that comes straight back never shows it. It takes

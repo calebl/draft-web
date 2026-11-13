@@ -150,6 +150,99 @@ class OfflineWriteSystemTest < ActionDispatch::SystemTestCase
     assert_includes stored, 'Nowhere to go'
   end
 
+  test 'New Session while home is out of reach opens a session for that story, created on reconnect' do
+    story = stories(:one)
+    visit root_path
+    wait_for_offline_page_stored
+    visit story_path(story)
+    assert_selector 'a', text: 'New Session'
+
+    go_offline
+    click_on 'New Session'
+
+    composer = find('#composer')
+    assert_equal true, evaluate_script('document.activeElement.id === "composer"')
+    composer.send_keys('Started from the story page', :enter)
+    assert_selector '.text .unsaved', text: 'Started from the story page'
+    assert_selector '.unsaved-note', text: 'Not saved yet. Will send when Draft can reach home.'
+
+    assert_difference -> { story.writing_sessions.count }, 1 do
+      go_online
+      execute_script('window.dispatchEvent(new Event("online"))')
+      assert_current_path(%r{/stories/#{story.id}/writing_sessions/\d+/edit})
+      assert_no_selector '.unsaved'
+    end
+    assert_equal '<div>Started from the story page</div>', story.writing_sessions.order(:id).last.text
+  end
+
+  test 'Write on the stories list while home is out of reach opens a session for that story' do
+    visit root_path
+    wait_for_offline_page_stored
+    visit stories_path
+
+    go_offline
+    within('.story', text: 'Second story') { click_on 'Write' }
+
+    assert_selector '#composer'
+    composer_story = evaluate_script('document.querySelector("[data-controller=compose]").dataset.storyId')
+    assert_equal stories(:two).id.to_s, composer_story
+  end
+
+  test 'A session home refuses to create says so, keeps the words and is not sent again' do
+    story = stories(:one)
+    visit root_path
+    wait_for_offline_page_stored
+
+    go_offline
+    visit root_path
+    within('.story', text: 'Story title') { click_on 'Write' }
+    find('#composer').send_keys('Home will refuse this', :enter)
+    assert_selector '.text .unsaved', text: 'Home will refuse this'
+
+    answer_creates_with(422)
+    assert_no_difference -> { story.writing_sessions.count } do
+      go_online
+      execute_script('window.dispatchEvent(new Event("online"))')
+      assert_selector '.unsaved-note', text: "Home couldn't save this. The words are kept on this phone."
+    end
+    assert_no_text 'Will send when Draft can reach home.'
+    assert_selector '.text .unsaved', text: 'Home will refuse this'
+    assert_includes stored_offline_sessions, 'Home will refuse this'
+
+    # A refusal is not sent again.
+    execute_script('window.dispatchEvent(new Event("online"))')
+    sleep 0.5
+    assert_equal 1, evaluate_script('window.createRequests')
+
+    click_on 'Done'
+    assert_selector '.story', text: "Home couldn't save this"
+  end
+
+  test 'A server error on create says home had a problem and is sent again' do
+    story = stories(:one)
+    visit root_path
+    wait_for_offline_page_stored
+
+    go_offline
+    visit root_path
+    within('.story', text: 'Story title') { click_on 'Write' }
+    find('#composer').send_keys('Home will stumble once', :enter)
+
+    answer_creates_with(500)
+    go_online
+    execute_script('window.dispatchEvent(new Event("online"))')
+    assert_selector '.unsaved-note', text: "Home couldn't save this yet. Will try again."
+    assert_selector '.text .unsaved', text: 'Home will stumble once'
+
+    assert_difference -> { story.writing_sessions.count }, 1 do
+      execute_script('window.fetch = window.originalFetch')
+      execute_script('window.dispatchEvent(new Event("online"))')
+      assert_current_path(%r{/stories/#{story.id}/writing_sessions/\d+/edit})
+      assert_no_selector '.unsaved'
+    end
+    assert_equal '<div>Home will stumble once</div>', story.writing_sessions.order(:id).last.text
+  end
+
   test 'Pages and the offline writing page load nothing from outside sites' do
     visit root_path
     wait_for_offline_page_stored
@@ -170,6 +263,27 @@ class OfflineWriteSystemTest < ActionDispatch::SystemTestCase
       const done = arguments[0];
       const check = () => caches.match('/offline-write').then((page) => page ? done(true) : setTimeout(check, 100));
       navigator.serviceWorker.ready.then(check);
+    JS
+  end
+
+  # Home answers every session create with this status instead of saving it.
+  def answer_creates_with(status)
+    execute_script(<<~JS)
+      window.originalFetch = window.fetch;
+      window.createRequests = 0;
+      window.fetch = function(url, options) {
+        if (options && options.method === 'POST') {
+          window.createRequests += 1;
+          return Promise.resolve(new Response('{}', {status: #{status}}));
+        }
+        return window.originalFetch(url, options);
+      };
+    JS
+  end
+
+  def stored_offline_sessions
+    evaluate_script(<<~JS)
+      Object.keys(localStorage).filter((key) => key.startsWith('draft.unsaved.offline-')).map((key) => localStorage.getItem(key)).join()
     JS
   end
 
