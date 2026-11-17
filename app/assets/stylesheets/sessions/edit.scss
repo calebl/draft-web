@@ -1,8 +1,9 @@
 @import '../variables';
 @import '../mixins';
 
-// The writing screen reads like a chat: the header on top, the composer pinned to the
-// bottom, and the text filling everything in between, scrolled to the newest line.
+// The writing screen reads like a chat: the header on top, the composer anchored near
+// the bottom on phones and raised on desktop, and the text filling everything in between,
+// scrolled to the newest line.
 // The document itself never scrolls here, so the keyboard cannot push the header away.
 html:has(.edit-page, .new-page), html:has(.edit-page, .new-page) body {
   overflow: hidden;
@@ -97,6 +98,16 @@ html:has(.edit-page, .new-page), html:has(.edit-page, .new-page) body {
       .word-count {
         bottom: 16px;
         right: 8px;
+      }
+
+      // On a desktop screen the composer sits about 30% up from the bottom so it stays
+      // at eye level; the word count stays just under it.
+      @include breakpoint(desktop) {
+        padding-bottom: 30vh;
+
+        .word-count {
+          bottom: calc(30vh - 24px);
+        }
       }
     }
   }
