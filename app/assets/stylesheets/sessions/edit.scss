@@ -98,6 +98,16 @@ html:has(.edit-page, .new-page), html:has(.edit-page, .new-page) body {
         bottom: 16px;
         right: 8px;
       }
+
+      // On a desktop screen the composer sits about 30% up from the bottom so it stays
+      // at eye level; the word count stays just under it.
+      @include breakpoint(desktop) {
+        padding-bottom: 30vh;
+
+        .word-count {
+          bottom: calc(30vh - 24px);
+        }
+      }
     }
   }
 }

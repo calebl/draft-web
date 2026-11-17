@@ -43,6 +43,15 @@ class WritingViewportSystemTest < ActionDispatch::SystemTestCase
       assert layout['scrolls'], "#{width}px: long text scrolls"
       assert_operator layout['gapToBottom'], :<=, 1, "#{width}px: text starts scrolled to the bottom"
     end
+
+    # On a desktop screen the composer sits about 30% up from the bottom.
+    page.driver.browser.manage.window.resize_to(1618, 1265)
+    visit edit_story_writing_session_path(stories(:one), session)
+    assert_text 'Sample line 80'
+    raised = evaluate_script(<<~JS)
+      (window.innerHeight - document.getElementById('composer').getBoundingClientRect().bottom) / window.innerHeight
+    JS
+    assert_in_delta 0.3, raised, 0.03, 'desktop: composer sits about 30% up from the bottom'
   ensure
     page.driver.browser.manage.window.resize_to(1400, 1400)
   end
